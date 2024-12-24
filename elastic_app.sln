@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35013.160
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{15A4BA38-A4E7-4003-B237-A9C63D5A3A96}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "elastic_app.api", "backend\src\elastic_app.api\elastic_app.api.csproj", "{9A90BD91-072A-41EE-8F5F-603210AF84C9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{FE0AA2EA-97EB-4832-924E-8606E24CA733}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C961F899-A35B-4217-A990-F31B8874D38C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "frontend", "frontend", "{64DD79C7-368A-485D-A6B3-087D30415900}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "terraform", "terraform", "{B27EABD0-E809-4BBC-8D9C-22921463EAE9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{9170FD33-9116-4C1C-A491-A1A0EDB64444}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "elastic_app.api.tests", "backend\test\elastic_app.api.tests\elastic_app.api.tests.csproj", "{1DB1F6E1-1AD1-406A-BA01-949ECDC48C9E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9A90BD91-072A-41EE-8F5F-603210AF84C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A90BD91-072A-41EE-8F5F-603210AF84C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A90BD91-072A-41EE-8F5F-603210AF84C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A90BD91-072A-41EE-8F5F-603210AF84C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DB1F6E1-1AD1-406A-BA01-949ECDC48C9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DB1F6E1-1AD1-406A-BA01-949ECDC48C9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DB1F6E1-1AD1-406A-BA01-949ECDC48C9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DB1F6E1-1AD1-406A-BA01-949ECDC48C9E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9A90BD91-072A-41EE-8F5F-603210AF84C9} = {C961F899-A35B-4217-A990-F31B8874D38C}
+		{C961F899-A35B-4217-A990-F31B8874D38C} = {FE0AA2EA-97EB-4832-924E-8606E24CA733}
+		{9170FD33-9116-4C1C-A491-A1A0EDB64444} = {FE0AA2EA-97EB-4832-924E-8606E24CA733}
+		{1DB1F6E1-1AD1-406A-BA01-949ECDC48C9E} = {9170FD33-9116-4C1C-A491-A1A0EDB64444}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {90D57E89-482E-4227-A731-E23E82CA82B4}
+	EndGlobalSection
+EndGlobal
