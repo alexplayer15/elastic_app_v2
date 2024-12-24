@@ -1,0 +1,5 @@
+name: "CI Run: {{github.run}}"
+
+on: push
+
+branch: feature/*    
