@@ -4,6 +4,6 @@ namespace elastic_app.api.Services.UserService
 {
     public interface IUserService
     {
-
+        Task RegisterUserAsync(RegisterRequest registrationDetails);
     }
 }

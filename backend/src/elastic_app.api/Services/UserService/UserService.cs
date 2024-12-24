@@ -56,7 +56,6 @@ namespace elastic_app.api.Services.UserService
 
             await _userRepository.AddUserAsync(user);  
         }
-
         private string HashPassword(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password); 

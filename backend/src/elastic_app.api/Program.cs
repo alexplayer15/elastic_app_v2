@@ -1,25 +1,29 @@
-var builder = WebApplication.CreateBuilder(args);
+using elastic_app.api;
+using NLog;
 
-// Add services to the container.
+var logger = LogManager.Setup().GetCurrentClassLogger();
+logger.Debug("Starting Flight Offer API");
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+try
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var builder = WebApplication.CreateBuilder(args);
+    builder.Services.AddApplication();
+    builder.Services.AddControllers();
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
+
+    var app = builder.Build();
+    app.UseHttpsRedirection();
+    app.UseAuthorization();
+    app.MapControllers();
+    app.Run();
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+catch (Exception exception)
+{
+    logger.Error(exception, "Stopped program because of exception");
+    throw;
+}
+finally
+{
+    LogManager.Shutdown();
+}
