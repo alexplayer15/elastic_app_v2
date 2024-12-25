@@ -1,4 +1,4 @@
-﻿namespace elastic_app.api.Models
+﻿namespace elastic_app.domain.Models
 {
     public class User
     {

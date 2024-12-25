@@ -1,6 +1,6 @@
-﻿using elastic_app.api.Models;
+﻿using elastic_app.domain.Models;
 
-namespace elastic_app.api.Repositories
+namespace elastic_app.domain.Abstractions
 {
     public interface IUserRepository
     {

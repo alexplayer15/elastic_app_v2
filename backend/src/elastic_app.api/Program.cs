@@ -1,4 +1,3 @@
-using elastic_app.api;
 using NLog;
 
 var logger = LogManager.Setup().GetCurrentClassLogger();

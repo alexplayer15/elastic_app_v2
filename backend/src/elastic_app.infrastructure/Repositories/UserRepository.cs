@@ -1,9 +1,10 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
-using elastic_app.api.Models;
+using elastic_app.domain.Models;
+using elastic_app.domain.Abstractions;
 
-namespace elastic_app.api.Repositories
+namespace elastic_app.infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {

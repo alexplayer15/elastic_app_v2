@@ -1,6 +1,6 @@
-﻿using elastic_app.api.DTOs;
+﻿using elastic_app.application.DTOs;
 
-namespace elastic_app.api.Services.UserService
+namespace elastic_app.application.Services.UserService
 {
     public interface IUserService
     {

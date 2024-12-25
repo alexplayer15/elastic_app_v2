@@ -1,4 +1,4 @@
-using elastic_app.api.DTOs;
+using elastic_app.application.DTOs;
 using elastic_app.api.Services.UserService;
 using Microsoft.AspNetCore.Mvc;
 

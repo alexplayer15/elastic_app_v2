@@ -1,4 +1,4 @@
-﻿namespace elastic_app.api.DTOs
+﻿namespace elastic_app.application.DTOs
 {
     public class RegisterRequest
     {

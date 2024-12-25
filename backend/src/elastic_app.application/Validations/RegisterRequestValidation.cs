@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using elastic_app.api.DTOs;
+using elastic_app.application.DTOs;
 
-namespace elastic_app.api.Validations
+namespace elastic_app.application.Validations
 {
     public class RegisterRequestValidation : AbstractValidator<RegisterRequest>
     {

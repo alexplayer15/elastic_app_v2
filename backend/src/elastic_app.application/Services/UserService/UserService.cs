@@ -1,8 +1,9 @@
-﻿using elastic_app.api.DTOs;
-using elastic_app.api.Models;
-using elastic_app.api.Repositories;
-using elastic_app.api.Validations;
-namespace elastic_app.api.Services.UserService
+﻿using elastic_app.application.DTOs;
+using elastic_app.domain.Models;
+using elastic_app.domain.Abstractions;
+using elastic_app.application.Validations;
+
+namespace elastic_app.application.Services.UserService
 {
     public class UserService : IUserService
     {
