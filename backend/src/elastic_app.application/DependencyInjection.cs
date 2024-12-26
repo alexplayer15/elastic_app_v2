@@ -2,7 +2,7 @@
 using elastic_app.application.Services.UserService;
 
 
-namespace elastic_app.api
+namespace elastic_app.application
 {
     public static class DependencyInjection
     {

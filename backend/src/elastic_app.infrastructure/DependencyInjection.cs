@@ -1,14 +1,21 @@
-﻿using Amazon.DynamoDBv2;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Runtime;
-using elastic_app.infrastructure.Repositories;
-using Microsoft.Extensions.DependencyInjection;
+using Amazon;
+using elastic_app.infrastructure.Config;
 
 namespace elastic_app.infrastructure
 {
     public static class DependencyInjection
     {
-
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        {
+            _ = services.RegisterDynamoDb(configuration);
+    
+            return services;
+        }
         private static IServiceCollection RegisterDynamoDb(this IServiceCollection services, IConfiguration configuration)
         {
             var dynamoDbConfig = new DynamoDbSettings();
