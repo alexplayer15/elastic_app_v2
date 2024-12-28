@@ -1,24 +1,11 @@
-resource "aws_dynamodb_table" "user-dynamodb-table" {
-  name           = "UserData"
-  billing_mode   = "PROVISIONED"
-  read_capacity  = 20
-  write_capacity = 20
-  hash_key       = "UserId"
-  range_key      = "GameTitle"
+resource "aws_dynamodb_table" "users_table" {
+  name           = "UserData"              
+  billing_mode   = "PAY_PER_REQUEST" 
+  hash_key       = "id"                 
 
   attribute {
-    name = "UserId"
-    type = "S"
-  }
-
-  attribute {
-    name = "GameTitle"
-    type = "S"
-  }
-
-  attribute {
-    name = "TopScore"
-    type = "N"
+    name = "id"                          
+    type = "S"                           
   }
 
   ttl {

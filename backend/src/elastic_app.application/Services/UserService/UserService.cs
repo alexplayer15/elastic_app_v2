@@ -47,7 +47,7 @@ namespace elastic_app.application.Services.UserService
             var user = new User
             {
                 Id = Guid.NewGuid(),
-                ForeName = registrationDetails.Forename,
+                Forename = registrationDetails.Forename,
                 Surname = registrationDetails.Surname,
                 Username = registrationDetails.Username,
                 Email = registrationDetails.Email,
