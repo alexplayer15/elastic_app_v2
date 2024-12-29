@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace elastic_app.api.Controllers
 {
+    [Route("api")]
     [ApiController]
-    [Route("[controller]")]
     public class ElasticAppController : ControllerBase
     {
         private readonly IUserService _userService;

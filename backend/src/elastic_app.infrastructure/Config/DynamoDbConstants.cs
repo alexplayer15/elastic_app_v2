@@ -3,4 +3,6 @@
 public class DynamoDbConstants
 {
     public const string DynamoDbConfigurationSection = "DynamoDb";
+
+    public const string UserData = "UserData";
 }

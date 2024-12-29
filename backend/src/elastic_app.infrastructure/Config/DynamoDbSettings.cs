@@ -6,13 +6,11 @@
         public RetrySetting RetrySetting { get; set; }
         public TimeSpan Timeout { get; set; }
     }
-
     public class RetrySetting
     {
         public int NoOfRetry { get; set; }
         public int Exponent { get; set; }
     }
-
     public class Storage
     {
         public bool LocalMode { get; set; }

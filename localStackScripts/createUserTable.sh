@@ -1,6 +1,6 @@
 #!/bin/sh
-set -e #to exit on first error
-echo "Running create-table.sh..."
-sleep 2  # Wait for 2 seconds
-awslocal dynamodb create-table --region eu-west-1 --cli-input-json file:///etc/localstack/init/ready.d/dynamoDbSchemas/userTableSchema.json
+set -e 
+echo "Creating User Data table"
+sleep 2  
+awslocal dynamodb create-table --region eu-west-1 --cli-input-json file:///etc/localstack/init/ready.d/dynamoDbSchemas/UserData.json
 echo "table created"

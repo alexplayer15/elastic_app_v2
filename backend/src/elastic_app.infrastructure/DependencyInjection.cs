@@ -5,6 +5,8 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.Runtime;
 using Amazon;
 using elastic_app.infrastructure.Config;
+using elastic_app.infrastructure.Repositories;
+using elastic_app.domain.Abstractions;
 
 namespace elastic_app.infrastructure
 {
@@ -12,6 +14,7 @@ namespace elastic_app.infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            _ = services.AddTransient<IUserRepository, UserRepository>();
             _ = services.RegisterDynamoDb(configuration);
     
             return services;
