@@ -2,7 +2,7 @@ using elastic_app.application.DTOs;
 using elastic_app.application.Services.UserService;
 using Microsoft.AspNetCore.Mvc;
 
-namespace elastic_app.api.Controllers
+namespace elastic_app.api.Controller
 {
     [Route("api")]
     [ApiController]

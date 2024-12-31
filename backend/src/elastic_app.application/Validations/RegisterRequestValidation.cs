@@ -51,7 +51,7 @@ namespace elastic_app.application.Validations
         {
             RuleFor(r => r.Password)
                 .NotEmpty().WithMessage("Password cannot be empty")
-                .Length(8, 15).WithMessage("Password must be between 8 and 15 characters.")
+                .Length(8, 30).WithMessage("Password must be between 8 and 30 characters.")
                 .Matches(@"^(?=(.*[A-Z]){2,})(?=(.*\d){2,}).*$")
                 .WithMessage("Password must contain at least 2 uppercase letters and 2 numbers.");
         }
