@@ -8,8 +8,22 @@ namespace elastic_app.common.tests.Builders
         private string _surname = "Player";
         private string _email = "example15@example.com";
         private string _username = "AlexPlayer15";
-        private string _password = "thisisnotreal";
-        private string _reEnterPassword = "thisisnotreal";
+        private string _password = "thisIsNotReal22!";
+        private string _reEnterPassword = "thisIsNotReal22!";
+
+        public RegisterRequestBuilder WithUsername(string username)
+        {
+            _username = username;
+
+            return this;
+        }
+
+        public RegisterRequestBuilder WithEmail(string email)
+        {
+            _email = email;
+
+            return this;
+        }
 
         public RegisterRequestBuilder WithPassword(string password)
         {

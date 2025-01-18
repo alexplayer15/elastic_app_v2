@@ -8,15 +8,15 @@ namespace elastic_app.infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly DynamoDBContext _dbContext;
-        public UserRepository(IAmazonDynamoDB dynamoDbClient)
+        private readonly IDynamoDBContext _dynamoDbContext;
+        public UserRepository(IDynamoDBContext dynamoDbContext)
         {
-            _dbContext = new DynamoDBContext(dynamoDbClient);
+            _dynamoDbContext = dynamoDbContext;
         }
         public async Task<bool> CheckEmailExistsAsync(string email)
         {
-            var search = _dbContext.ScanAsync<User>(new[] {
-                new ScanCondition(nameof(User.Email), ScanOperator.Equal, email)
+            var search = _dynamoDbContext.ScanAsync<UserModel>(new[] {
+                new ScanCondition(nameof(UserModel.Email), ScanOperator.Equal, email)
             });
 
             var results = await search.GetRemainingAsync();
@@ -24,16 +24,24 @@ namespace elastic_app.infrastructure.Repositories
         }
         public async Task<bool> CheckUsernameExistsAsync(string username)
         {
-            var search = _dbContext.ScanAsync<User>(new[] {
-                new ScanCondition(nameof(User.Username), ScanOperator.Equal, username)
+            var search = _dynamoDbContext.ScanAsync<UserModel>(new[] {
+                new ScanCondition(nameof(UserModel.Username), ScanOperator.Equal, username)
             });
 
             var results = await search.GetRemainingAsync();
             return results.Count > 0;
         }
-        public async Task AddUserAsync(User user)
+        public async Task AddUserAsync(UserModel user)
         {
-            await _dbContext.SaveAsync(user);
+            try
+            {
+               await _dynamoDbContext.SaveAsync(user);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex); //Add ILogger here later
+            }
+            
         }
     }
 }

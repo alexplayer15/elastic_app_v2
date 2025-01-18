@@ -1,5 +1,5 @@
 using elastic_app.application.DTOs;
-using elastic_app.application.Services.UserService;
+using elastic_app.application.Services.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace elastic_app.api.Controller

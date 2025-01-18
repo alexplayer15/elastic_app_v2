@@ -3,7 +3,7 @@ using NSubstitute;
 using elastic_app.api.Controller;
 using elastic_app.application.Services;
 using elastic_app.common.tests.Builders;
-using elastic_app.application.Services.UserService;
+using elastic_app.application.Services.User;
 using elastic_app.application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
@@ -28,7 +28,7 @@ namespace elastic_app.unit.tests.Controller
         public async void WhenAllRegistrationDetailsAreEnteredCorrectly_ShouldReturnRegistrationSucessfull()
         {
             //Arrange 
-            var registrationData =new RegisterRequestBuilder().Build();
+            var registrationData = new RegisterRequestBuilder().Build();
 
             var userService = _mockUserService.RegisterUserAsync(Arg.Any<RegisterRequest>())
                 .Returns(Task.CompletedTask);
@@ -43,7 +43,7 @@ namespace elastic_app.unit.tests.Controller
         }
 
         [Fact]
-        public async void WhenRegistrationDetailsAreEnteredIncorrectly_ShouldReturnBadRequest()
+        public async Task WhenRegistrationDetailsAreEnteredIncorrectly_ShouldReturnBadRequest()
         {
             //Arrange 
             var registrationData = new RegisterRequestBuilder().WithPassword("badpassword").WithReEnterPassword("badpassword").Build();

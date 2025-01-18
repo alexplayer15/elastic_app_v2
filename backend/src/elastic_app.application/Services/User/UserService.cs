@@ -1,27 +1,28 @@
 ﻿using elastic_app.application.DTOs;
 using elastic_app.domain.Models;
 using elastic_app.domain.Abstractions;
-using elastic_app.application.Validations;
+using FluentValidation;
 
-namespace elastic_app.application.Services.UserService
+namespace elastic_app.application.Services.User
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        public UserService(IUserRepository userRepository)
+        private readonly IValidator<RegisterRequest> _registerRequestValidator;
+        public UserService(IUserRepository userRepository, IValidator<RegisterRequest> registerRequestValidator)
         {
             _userRepository = userRepository;
+            _registerRequestValidator = registerRequestValidator;
         }
 
         public async Task RegisterUserAsync(RegisterRequest registrationDetails)
         {
             if (registrationDetails == null)
             {
-                throw new ArgumentNullException(nameof(registrationDetails));
+                throw new ArgumentNullException(nameof(registrationDetails), "registration details cannot be null");
             }
 
-            var validator = new RegisterRequestValidation();
-            var validationResult = await validator.ValidateAsync(registrationDetails);
+            var validationResult = await _registerRequestValidator.ValidateAsync(registrationDetails);
 
             if (!validationResult.IsValid)
             {
@@ -44,7 +45,7 @@ namespace elastic_app.application.Services.UserService
                 throw new InvalidOperationException("This username is already in use");
             }
 
-            var user = new User
+            var user = new UserModel
             {
                 Id = Guid.NewGuid(),
                 Forename = registrationDetails.Forename,

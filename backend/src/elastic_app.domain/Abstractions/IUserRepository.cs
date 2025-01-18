@@ -6,6 +6,6 @@ namespace elastic_app.domain.Abstractions
     {
         Task<bool> CheckEmailExistsAsync(string email);
         Task<bool> CheckUsernameExistsAsync(string username);
-        Task AddUserAsync(User user);
+        Task AddUserAsync(UserModel user);
     }
 }
