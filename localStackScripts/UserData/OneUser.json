@@ -1,0 +1,10 @@
+{
+  "id": { "S": "d2b19b7b-7289-4f7f-9d36-1f6a1cdcb8f6" },
+  "forename": { "S": "Alex" },
+  "surname": { "S": "Player" },
+  "username": { "S": "AlexPlayer15" },
+  "email": { "S": "example@example.com" },
+  "password": { "S": "FakePassword12!" },
+  "createdAt": { "S": "2025-01-18T00:00:00" }
+}
+     

@@ -1,15 +1,10 @@
-﻿
-
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.Model;
+﻿using Amazon.DynamoDBv2.DataModel;
 using FluentAssertions;
 using NSubstitute;
 using elastic_app.domain.Abstractions;
 using elastic_app.domain.Models;
 using elastic_app.infrastructure.Repositories;
 using elastic_app.common.tests.Builders;
-using Microsoft.AspNetCore.Mvc;
 
 
 namespace elastic_app.unit.tests.Repositories
@@ -127,7 +122,6 @@ namespace elastic_app.unit.tests.Repositories
 
             //Assert
             userExists.Should().BeFalse();
-
         }
 
         [Fact]

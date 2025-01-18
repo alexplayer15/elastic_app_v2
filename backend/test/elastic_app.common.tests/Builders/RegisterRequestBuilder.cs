@@ -39,6 +39,33 @@ namespace elastic_app.common.tests.Builders
             return this;
         }
 
+        public RegisterRequestBuilder WithValidRegistrationDetails(bool isValid)
+        {
+            if (isValid)
+            {
+                _forename = "Alex";
+                _surname = "Player";
+                _email = "example15@example.com";
+                _username = "AlexPlayer15";
+                _password = "thisIsNotReal22!";
+                _reEnterPassword = "thisIsNotReal22!";
+
+                return this;
+            }
+
+            else
+            {
+                _forename = "Alex";
+                _surname = "Player";
+                _email = "example15@example.com";
+                _username = "AlexPlayer15";
+                _password = "thisIsNotReal22!";
+                _reEnterPassword = "!";
+
+                return this;
+            }
+        }
+
         public RegisterRequest Build()
         {
             return new RegisterRequest()

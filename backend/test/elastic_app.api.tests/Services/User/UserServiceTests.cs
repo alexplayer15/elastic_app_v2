@@ -1,14 +1,13 @@
 ﻿using NSubstitute;
 using FluentAssertions;
 using FluentValidation;
-using NSubstitute.Core;
 using FluentValidation.Results;
 using elastic_app.application.Services.User;
 using elastic_app.domain.Abstractions;
 using elastic_app.domain.Models;
 using elastic_app.application.DTOs;
 using elastic_app.common.tests.Builders;
-using System.Reflection;
+
 
 namespace elastic_app.unit.tests.Services.User
 {
@@ -33,7 +32,7 @@ namespace elastic_app.unit.tests.Services.User
             RegisterRequest? registrationDetails = null;
 
             //Act
-            Func<Task> act = async () => await  _userService.RegisterUserAsync(registrationDetails);
+            Func<Task> act = async () => await _userService.RegisterUserAsync(registrationDetails);
 
             //Asssert
             await act.Should().ThrowAsync<ArgumentException>()
@@ -127,6 +126,5 @@ namespace elastic_app.unit.tests.Services.User
             await _mockUserRepository.Received(1).
                 AddUserAsync(Arg.Any<UserModel>());
         }
-
     }
 }
