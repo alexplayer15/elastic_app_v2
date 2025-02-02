@@ -46,7 +46,7 @@ namespace elastic_app.common.tests.Builders
                 _forename = "Alex";
                 _surname = "Player";
                 _email = "example15@example.com";
-                _username = "AlexPlayer15";
+                _username = "AlexPlayerTest15";
                 _password = "thisIsNotReal22!";
                 _reEnterPassword = "thisIsNotReal22!";
 
@@ -59,6 +59,60 @@ namespace elastic_app.common.tests.Builders
                 _surname = "Player";
                 _email = "example15@example.com";
                 _username = "AlexPlayer15";
+                _password = "thisIsNotReal22!";
+                _reEnterPassword = "!";
+
+                return this;
+            }
+        }
+
+        public RegisterRequestBuilder WithExistingUsername(bool usernameExists)
+        {
+            if (usernameExists)
+            {
+                _forename = "Alex";
+                _surname = "Player";
+                _email = "example150@example.com";
+                _username = "AlexPlayer15";
+                _password = "thisIsNotReal22!";
+                _reEnterPassword = "thisIsNotReal22!";
+
+                return this;
+            }
+
+            else
+            {
+                _forename = "Alex";
+                _surname = "Player";
+                _email = "example150@example.com";
+                _username = "AlexPlayerTest15";
+                _password = "thisIsNotReal22!";
+                _reEnterPassword = "!";
+
+                return this;
+            }
+        }
+
+        public RegisterRequestBuilder WithExistingEmail(bool emailExists)
+        {
+            if (emailExists)
+            {
+                _forename = "Alex";
+                _surname = "Player";
+                _email = "example@example.com";
+                _username = "AlexPlayerTest15";
+                _password = "thisIsNotReal22!";
+                _reEnterPassword = "thisIsNotReal22!";
+
+                return this;
+            }
+
+            else
+            {
+                _forename = "Alex";
+                _surname = "Player";
+                _email = "example15@example.com";
+                _username = "AlexPlayerTest15";
                 _password = "thisIsNotReal22!";
                 _reEnterPassword = "!";
 

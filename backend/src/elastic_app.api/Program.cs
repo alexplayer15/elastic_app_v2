@@ -6,13 +6,8 @@ logger.Debug("Starting Flight Offer API");
 
 try
 {
-
     var builder = WebApplication.CreateBuilder(args);
     builder.Configure();
-    builder.Services.AddHttpClient("TestContainer", client =>
-    {
-        client.BaseAddress = new Uri("http://localhost:8081/api/register");
-    });
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
@@ -32,5 +27,7 @@ finally
 {
     LogManager.Shutdown();
 }
+
+public partial class Program { }
 
 
