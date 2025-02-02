@@ -25,11 +25,6 @@ namespace elastic_app.integration.tests
         {
             //Arrange
             var registrationDetails = new RegisterRequestBuilder().WithValidRegistrationDetails(true).Build();
-            var userId = await GetUserIdFromDynamoDB(registrationDetails.Username);
-            if (userId != null)
-            {
-                await DeleteTestUserAsync(userId);
-            }
          
             var registrationDetailsJson = JsonSerializer.Serialize(registrationDetails);
 
@@ -51,6 +46,8 @@ namespace elastic_app.integration.tests
 
             deserializedResponse.Message.Should().Be("Registration successful.");
             deserializedResponse.Errors.Should().BeNull();
+
+            await CleanUpTestUserAsync(registrationDetails.Username);
         }
 
         [Fact]
@@ -109,7 +106,44 @@ namespace elastic_app.integration.tests
             deserializedResponse.Message.Should().BeNull();
         }
 
-        private async Task<string> GetUserIdFromDynamoDB(string username)
+        [Fact]
+
+        public async Task WhenAUserSuccessfullyRegisters_UserShouldBeInTheDatabase()
+        {
+            //Arrange
+            var username = "TestUser";
+            var registrationDetails = new RegisterRequestBuilder()
+                .WithUsername(username)
+                .Build();
+
+            var registrationDetailsJson = JsonSerializer.Serialize(registrationDetails);
+
+            _integrationTestClient
+                .SetDefaultHeaders();
+
+            //Act
+            await _integrationTestClient.MakeRequestAsync(HttpMethod.Post, Register, registrationDetails);
+
+            //Assert
+            var userDetails = await GetUserDetailsFromDynamoDB(username);
+            userDetails.Should().NotBeNull();
+            userDetails["username"].S = username;
+
+            await CleanUpTestUserAsync(registrationDetails.Username);
+        }
+
+        private async Task CleanUpTestUserAsync(string username)
+        {
+            var userDetails = await GetUserDetailsFromDynamoDB(username);
+            if (userDetails != null && userDetails.ContainsKey("id"))
+            {
+                var userId = userDetails["id"].S;
+                await DeleteTestUserAsync(userId);
+            }
+
+        }
+
+        private async Task<Dictionary<string, AttributeValue>> GetUserDetailsFromDynamoDB(string username)
         {
             var request = new ScanRequest
             {
@@ -123,7 +157,7 @@ namespace elastic_app.integration.tests
 
             var response = await _dynamoDbClient.ScanAsync(request);
 
-            return response.Items.Count > 0 ? response.Items[0]["id"].S : null;
+            return response.Items.Count > 0 ? response.Items[0] : null;
         }
 
         private async Task DeleteTestUserAsync(string userId)

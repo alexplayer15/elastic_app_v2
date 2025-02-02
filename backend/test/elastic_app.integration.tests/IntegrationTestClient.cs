@@ -57,12 +57,6 @@ namespace elastic_app.integration.tests
             return _httpResponseMessage;
         }
 
-
-        //public async Task MakeRequestAsync()
-        //{
-        //    _httpResponseMessage = await _httpClient.SendAsync(_httpRequestMessage);
-        //}
-
         public HttpStatusCode GetResponseStatusCode()
         {
             return _httpResponseMessage.StatusCode;
