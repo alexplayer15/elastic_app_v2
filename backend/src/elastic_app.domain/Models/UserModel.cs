@@ -10,6 +10,7 @@ namespace elastic_app.domain.Models
         [property: DynamoDBProperty("surname")] public string Surname { get; set; } = string.Empty;
         [property: DynamoDBProperty("username")] public string Username { get; set; } = string.Empty;
         [property: DynamoDBProperty("email")] public string Email { get; set; } = string.Empty;
+        [property: DynamoDBProperty("emailVerified")] public bool EmailVerified { get; set; } = false;
         [property: DynamoDBProperty("password")] public string PasswordHash { get; set; }
         [property: DynamoDBProperty("createdAt")] public DateTime CreatedAt { get; set; }
     }
