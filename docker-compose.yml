@@ -1,0 +1,30 @@
+services:  
+  api:
+    container_name: elastic_app_api
+    image: elastic_app_api_image
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8081:8081'
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Integration
+      - ASPNETCORE_URLS=http://+:8081
+    depends_on:
+      - localstack  
+  localstack:
+    container_name: localstack
+    hostname: localstack
+    image: localstack/localstack:2.0
+    ports:
+      - '4566:4566'
+      - '4510-4559:4510-4559'
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - DYNAMODB_SHARE_DB=1  
+      - AWS_ACCESS_KEY_ID=DUMMYIDEXAMPLE
+      - AWS_SECRET_ACCESS_KEY=DUMMYEXAMPLEKEY
+      - REGION=eu-west-2
+    volumes:
+      - ./localStackScripts:/etc/localstack/init/ready.d
+      - '/var/run/docker.sock:/var/run/docker.sock'

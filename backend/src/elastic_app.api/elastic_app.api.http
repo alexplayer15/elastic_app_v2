@@ -1,6 +1,6 @@
 @elastic_app.api_HostAddress = http://localhost:5156
 
-GET {{elastic_app.api_HostAddress}}/weatherforecast/
+POST {{elastic_app.api_HostAddress}}/api/register
 Accept: application/json
 
 ###
