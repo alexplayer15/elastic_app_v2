@@ -1,4 +1,6 @@
 using elastic_app.api.ServiceConfigurations;
+using elastic_app.application;
+using MediatR;
 using NLog;
 
 var logger = LogManager.Setup().GetCurrentClassLogger();
@@ -11,6 +13,7 @@ try
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+    builder.Services.AddMediatR(typeof(RegisterRequestHandler).Assembly);
 
     var app = builder.Build();
     app.UseHttpsRedirection();
