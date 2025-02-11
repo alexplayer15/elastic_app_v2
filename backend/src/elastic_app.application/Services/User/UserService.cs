@@ -9,14 +9,16 @@ namespace elastic_app.application.Services.User
     {
         private readonly IUserRepository _userRepository;
         private readonly IValidator<RegisterRequest> _registerRequestValidator;
+
         public UserService(IUserRepository userRepository, IValidator<RegisterRequest> registerRequestValidator)
         {
-            _userRepository = userRepository;
             _registerRequestValidator = registerRequestValidator;
+            _userRepository = userRepository;
         }
 
         public async Task RegisterUserAsync(RegisterRequest registrationDetails)
         {
+
             if (registrationDetails == null)
             {
                 throw new ArgumentNullException(nameof(registrationDetails), "registration details cannot be null");

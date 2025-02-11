@@ -1,6 +1,6 @@
-using elastic_app.application.DTOs;
-using elastic_app.application.Services.User;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using elastic_app.application.Commands;
 
 namespace elastic_app.api.Controller
 {
@@ -8,19 +8,19 @@ namespace elastic_app.api.Controller
     [ApiController]
     public class ElasticAppController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IMediator _mediator;
 
-        public ElasticAppController(IUserService userService)
+        public ElasticAppController(IMediator mediator)
         {
-            _userService = userService;
+            _mediator = mediator;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest registrationDetails)
+        public async Task<IActionResult> Register([FromBody] RegisterRequestCommand registerRequest)
         {
             try
             {
-                await _userService.RegisterUserAsync(registrationDetails);
+                await _mediator.Send(registerRequest);
 
                 return Ok(new { message = "Registration successful." });
             }
@@ -33,6 +33,5 @@ namespace elastic_app.api.Controller
                 return StatusCode(500, new { error = "An unexpected error occurred.", details = ex.Message });
             }
         }
-
     }
 }

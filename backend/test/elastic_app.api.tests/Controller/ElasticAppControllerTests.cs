@@ -1,37 +1,33 @@
 using FluentAssertions;
 using NSubstitute;
 using elastic_app.api.Controller;
-using elastic_app.application.Services;
 using elastic_app.common.tests.Builders;
-using elastic_app.application.Services.User;
-using elastic_app.application.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
-using System.ComponentModel;
+using MediatR;
+using elastic_app.application.Commands;
 
 namespace elastic_app.unit.tests.Controller
 {
     public class ElasticAppControllerTests
     {
         
-        private readonly IUserService _mockUserService;
+        private readonly IMediator _mockMediator;
         private readonly ElasticAppController _elasticAppController;
 
         public ElasticAppControllerTests()
         {
-            _mockUserService = Substitute.For<IUserService>();
-            _elasticAppController = new ElasticAppController(_mockUserService);
+            _mockMediator = Substitute.For<IMediator>();
+            _elasticAppController = new ElasticAppController(_mockMediator);
         }
 
         [Fact]
-        public async void WhenAllRegistrationDetailsAreEnteredCorrectly_ShouldReturnRegistrationSucessfull()
+        public async Task WhenAllRegistrationDetailsAreEnteredCorrectly_ShouldReturnRegistrationSucessfull()
         {
             //Arrange 
-            var registrationData = new RegisterRequestBuilder().Build();
+            var registrationData = new RegisterRequestCommandBuilder().Build();
 
-            var userService = _mockUserService.RegisterUserAsync(Arg.Any<RegisterRequest>())
-                .Returns(Task.CompletedTask);
+            var userService = _mockMediator.Send(Arg.Any<RegisterRequestCommand>())
+                .Returns(Task.FromResult(Unit.Value));
             //Act 
             var controllerResponse = await _elasticAppController.Register(registrationData);
 
@@ -46,10 +42,10 @@ namespace elastic_app.unit.tests.Controller
         public async Task WhenRegistrationDetailsAreEnteredIncorrectly_ShouldReturnBadRequest()
         {
             //Arrange 
-            var registrationData = new RegisterRequestBuilder().WithPassword("badpassword").WithReEnterPassword("badpassword").Build();
+            var registrationData = new RegisterRequestCommandBuilder().WithPassword("badpassword").WithReEnterPassword("badpassword").Build();
 
-            var userService = _mockUserService.RegisterUserAsync(Arg.Any<RegisterRequest>())
-                .Returns(Task.FromException(new InvalidOperationException("Password must contain at least 2 uppercase letters and 2 numbers.")));
+            _mockMediator.Send(Arg.Any<RegisterRequestCommand>())
+                .Returns(Task.FromException<Unit>(new InvalidOperationException("Password must contain at least 2 uppercase letters and 2 numbers.")));
             //Act 
             var controllerResponse = await _elasticAppController.Register(registrationData);
 
