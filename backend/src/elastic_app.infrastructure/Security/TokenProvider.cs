@@ -4,10 +4,11 @@ using System.Security.Claims;
 using elastic_app.domain.Models;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.JsonWebTokens;
+using elastic_app.domain.Abstractions;
 
 namespace elastic_app.infrastructure.Security
 {
-    internal sealed class TokenProvider(IConfiguration configuration)
+    internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvider
     {
         public string Create(UserModel userModel)
         {
