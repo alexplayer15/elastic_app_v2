@@ -54,6 +54,7 @@ namespace elastic_app.application.Services.User
                 Surname = registrationDetails.Surname,
                 Username = registrationDetails.Username,
                 Email = registrationDetails.Email,
+                EmailVerified = false,
                 PasswordHash = HashPassword(registrationDetails.Password),
                 CreatedAt = DateTime.UtcNow
             };

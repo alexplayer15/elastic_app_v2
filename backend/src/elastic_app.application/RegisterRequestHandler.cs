@@ -2,17 +2,19 @@
 using elastic_app.application.Commands;
 using elastic_app.application.Services.User;
 using MediatR;
+using elastic_app.domain.Abstractions;
 
 namespace elastic_app.application
 {
     public class RegisterRequestHandler : IRequestHandler<RegisterRequestCommand, Unit>
     {
         private readonly IUserService _userService;
+        private readonly ITokenProvider _tokenProvider;
 
-        public RegisterRequestHandler(IUserService userService)
+        public RegisterRequestHandler(IUserService userService, ITokenProvider tokenProvider)
         {
-    
             _userService = userService;
+            _tokenProvider = tokenProvider;
         }
         public async Task<Unit> Handle(RegisterRequestCommand registerRequest, CancellationToken cancellationToken)
         {
@@ -36,5 +38,4 @@ namespace elastic_app.application
             return Unit.Value;
         }
     }
-
 }
