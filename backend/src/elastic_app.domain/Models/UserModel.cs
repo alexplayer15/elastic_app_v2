@@ -6,10 +6,11 @@ namespace elastic_app.domain.Models
     public record UserModel
     {
         [property: DynamoDBHashKey("id")] public Guid Id { get; set; }
-        [property: DynamoDBProperty("forename")] public string Forename { get; set; } = string.Empty;
-        [property: DynamoDBProperty("surname")] public string Surname { get; set; } = string.Empty;
-        [property: DynamoDBProperty("username")] public string Username { get; set; } = string.Empty;
-        [property: DynamoDBProperty("email")] public string Email { get; set; } = string.Empty;
+        [property: DynamoDBProperty("forename")] public string Forename { get; set; } 
+        [property: DynamoDBProperty("surname")] public string Surname { get; set; }
+        [property: DynamoDBProperty("username")] public string Username { get; set; } 
+        [property: DynamoDBProperty("email")] public string Email { get; set; } 
+        [property: DynamoDBProperty("email")] public bool EmailVerified { get; set; } 
         [property: DynamoDBProperty("password")] public string PasswordHash { get; set; }
         [property: DynamoDBProperty("createdAt")] public DateTime CreatedAt { get; set; }
     }

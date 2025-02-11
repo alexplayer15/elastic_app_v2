@@ -2,6 +2,7 @@
 using elastic_app.domain.Models;
 using elastic_app.domain.Abstractions;
 using FluentValidation;
+using System.Text;
 
 namespace elastic_app.application.Services.User
 {
@@ -60,6 +61,23 @@ namespace elastic_app.application.Services.User
 
             await _userRepository.AddUserAsync(user);  
         }
+
+        public async Task<bool> VerifyEmailAsync(string token)
+        {
+            var user = await _userRepository.GetUserByVerificationTokenAsync(token);
+
+            if (user == null || user.IsEmailVerified)
+            {
+                return false; // Invalid or already verified token
+            }
+
+            user.IsEmailVerified = true;
+            user.VerificationToken = null; // Invalidate the token after use
+            await _userRepository.UpdateAsync(user);
+
+            return true;
+        }
+
         private string HashPassword(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password); 

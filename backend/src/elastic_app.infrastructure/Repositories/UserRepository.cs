@@ -3,6 +3,7 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using elastic_app.domain.Models;
 using elastic_app.domain.Abstractions;
+using Amazon.DynamoDBv2.Model;
 
 namespace elastic_app.infrastructure.Repositories
 {
@@ -43,5 +44,34 @@ namespace elastic_app.infrastructure.Repositories
             }
             
         }
+        public async Task<UserModel?> GetUserDetailsAsync(string username)
+        {
+            var search = _dynamoDbContext.ScanAsync<UserModel>(new[]
+            {
+                new ScanCondition(nameof(UserModel.Username), ScanOperator.Equal, username)
+            });
+
+            var results = await search.GetRemainingAsync();
+            return results.FirstOrDefault();
+        }
+
+        public async Task UpdateAsync(UserModel user)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user), "User object cannot be null");
+            }
+
+            try
+            {
+                await _dynamoDbContext.SaveAsync(user);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating user: {ex.Message}");
+                throw;
+            }
+        }
+
     }
 }
