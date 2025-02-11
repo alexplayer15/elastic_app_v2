@@ -14,6 +14,7 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     builder.Services.AddMediatR(typeof(RegisterRequestHandler).Assembly);
+    builder.Configuration.AddUserSecrets<Program>();
 
     var app = builder.Build();
     app.UseHttpsRedirection();
