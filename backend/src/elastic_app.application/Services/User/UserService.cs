@@ -59,8 +59,6 @@ namespace elastic_app.application.Services.User
                 CreatedAt = DateTime.UtcNow
             };
 
-            //add in email verification step here
-
             await _userRepository.AddUserAsync(user);  
         }
         private string HashPassword(string password)
