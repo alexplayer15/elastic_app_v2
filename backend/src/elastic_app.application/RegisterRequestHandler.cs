@@ -2,19 +2,31 @@
 using elastic_app.application.Commands;
 using elastic_app.application.Services.User;
 using MediatR;
+using elastic_app.domain.Abstractions;
 using System.Text;
 using elastic_app.application.Services.Email;
+using elastic_app.domain.Models;
+using FluentValidation;
+using elastic_app.application.Validations;
+using Mapster;
 
 namespace elastic_app.application
 {
     public class RegisterRequestHandler : IRequestHandler<RegisterRequestCommand, Unit>
     {
         private readonly IUserService _userService;
+        private readonly ITokenProvider _tokenProvider;
         private readonly IEmailService _emailService;
-        public RegisterRequestHandler(IUserService userService, IEmailService emailService)
+        private readonly IValidator<RegisterRequest> _registerRequestValidator;
+        public RegisterRequestHandler(IUserService userService, 
+            IEmailService emailService, 
+            ITokenProvider tokenProvider, 
+            IValidator<RegisterRequest> registerRequestValidator)
         {
             _userService = userService;
             _emailService = emailService;
+            _tokenProvider = tokenProvider;
+            _registerRequestValidator = registerRequestValidator;
         }
         public async Task<Unit> Handle(RegisterRequestCommand registerRequest, CancellationToken cancellationToken)
         {
@@ -23,32 +35,24 @@ namespace elastic_app.application
                 throw new ArgumentNullException(nameof(registerRequest), "registration details cannot be null");
             }
 
-            var registrationDetails = new RegisterRequest
+            var registrationDetails = registerRequest.Adapt<RegisterRequest>();
+
+            var validationResult = await _registerRequestValidator.ValidateAsync(registrationDetails);
+
+            if (!validationResult.IsValid)
             {
-                Forename = registerRequest.Forename,
-                Surname = registerRequest.Surname,
-                Username = registerRequest.Username,
-                Email = registerRequest.Email,
-                Password = registerRequest.Password,
-                ReEnterPassword = registerRequest.ReEnterPassword
-            };
+                var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+
+                var errorMessage = string.Join("; ", errors);
+
+                throw new InvalidOperationException(errorMessage);
+            }
 
             await _userService.RegisterUserAsync(registrationDetails);
 
-            var verificationLink = GenerateVerificationLink(registerRequest.Email);
-            var emailBody = $"<p>Thank you for registering! Please verify your email by clicking <a href='{verificationLink}'>here</a>.</p>";
-
-            await _emailService.SendEmailAsync(registerRequest.Email, "Verify Your Email", emailBody);
+            //await _emailService.SendEmailAsync();
 
             return Unit.Value;
         }
-
-        private string GenerateVerificationLink(string email)
-        {
-            var token = Convert.ToBase64String(Encoding.UTF8.GetBytes(email));
-            return token;
-
-        }
     }
-
 }

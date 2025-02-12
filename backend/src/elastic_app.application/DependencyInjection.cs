@@ -4,7 +4,9 @@ using elastic_app.application.Services.Email;
 using elastic_app.application.DTOs;
 using elastic_app.application.Validations;
 using FluentValidation;
-using elastic_app.application.Services.Email;
+using Mapster;
+using MapsterMapper;
+using System.Reflection;
 
 
 namespace elastic_app.application
@@ -16,6 +18,19 @@ namespace elastic_app.application
             _ = services.AddTransient<IUserService, UserService>();
             _ = services.AddTransient<IEmailService, EmailService>();
             _ = services.AddTransient<IValidator<RegisterRequest>, RegisterRequestValidation>();
+            _ = services.AddMappings();
+
+            return services;
+        }
+
+        public static IServiceCollection AddMappings(this IServiceCollection services)
+        {
+            var config = TypeAdapterConfig.GlobalSettings;
+
+            config.Scan(Assembly.GetExecutingAssembly());
+
+            services.AddSingleton(config);
+            services.AddSingleton<IMapper, Mapper>();
 
             return services;
         }

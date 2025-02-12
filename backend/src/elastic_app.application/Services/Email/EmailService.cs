@@ -13,12 +13,12 @@ namespace elastic_app.application.Services.Email
         {
             _configuration = configuration;
         }
-        public async Task SendEmailAsync(string toEmail, string subject, string body)
+        public async Task SendEmailAsync()
         {
             try
             {
                 using var mySmtpClient = ConfigureEmailClient();
-                using var myMail = ConfigureEmailMessage(toEmail, subject, body);
+                using var myMail = ConfigureEmailMessage();
 
                 await mySmtpClient.SendMailAsync(myMail);
             }
@@ -41,15 +41,15 @@ namespace elastic_app.application.Services.Email
 
             return smtpClient;
         }
-        private MailMessage ConfigureEmailMessage(string toEmail, string subject, string body)
+        private MailMessage ConfigureEmailMessage()
         {
             var from = new MailAddress(_configuration["EmailSettings:FromEmail"], "Your App Name");
-            var to = new MailAddress(toEmail);
+            var to = new MailAddress("toEmail");
             var mail = new MailMessage(from, to)
             {
-                Subject = subject,
+                Subject = "subject",
                 SubjectEncoding = Encoding.UTF8,
-                Body = body,
+                Body = "email-body",
                 BodyEncoding = Encoding.UTF8,
                 IsBodyHtml = true
             };

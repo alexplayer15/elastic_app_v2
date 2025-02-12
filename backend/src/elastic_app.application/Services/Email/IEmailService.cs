@@ -8,6 +8,6 @@ namespace elastic_app.application.Services.Email
 {
     public interface IEmailService
     {
-        public Task SendEmailAsync(string toEmail, string subject, string body);
+        public Task SendEmailAsync();
     }
 }

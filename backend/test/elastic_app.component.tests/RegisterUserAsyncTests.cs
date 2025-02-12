@@ -18,15 +18,13 @@ namespace elastic_app.component.tests
     {
         private readonly IUserService _userService;
         private readonly IUserRepository _userRepository;
-        private readonly IValidator<RegisterRequest> _registerRequestValidator;
         private readonly IDynamoDBContext _mockDynamoDbContext;
 
         public RegisterUserAsyncTest()
         {
             _mockDynamoDbContext = Substitute.For<IDynamoDBContext>();
-            _registerRequestValidator = new RegisterRequestValidation();
             _userRepository = new UserRepository(_mockDynamoDbContext);
-            _userService = new UserService(_userRepository, _registerRequestValidator);
+            _userService = new UserService(_userRepository);
         }
 
         [Fact]
