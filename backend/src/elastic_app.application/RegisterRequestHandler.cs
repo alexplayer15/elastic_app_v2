@@ -9,6 +9,7 @@ using elastic_app.domain.Models;
 using FluentValidation;
 using elastic_app.application.Validations;
 using Mapster;
+using elastic_app.application.Services.VerificationToken;
 
 namespace elastic_app.application
 {
@@ -17,16 +18,19 @@ namespace elastic_app.application
         private readonly IUserService _userService;
         private readonly ITokenProvider _tokenProvider;
         private readonly IEmailService _emailService;
+        private readonly IVerificationTokenService _verificationTokenService;
         private readonly IValidator<RegisterRequest> _registerRequestValidator;
         public RegisterRequestHandler(IUserService userService, 
             IEmailService emailService, 
             ITokenProvider tokenProvider, 
-            IValidator<RegisterRequest> registerRequestValidator)
+            IValidator<RegisterRequest> registerRequestValidator, 
+            IVerificationTokenService verificationTokenService)
         {
             _userService = userService;
             _emailService = emailService;
             _tokenProvider = tokenProvider;
             _registerRequestValidator = registerRequestValidator;
+            _verificationTokenService = verificationTokenService;
         }
         public async Task<Unit> Handle(RegisterRequestCommand registerRequest, CancellationToken cancellationToken)
         {
@@ -48,9 +52,11 @@ namespace elastic_app.application
                 throw new InvalidOperationException(errorMessage);
             }
 
-            await _userService.RegisterUserAsync(registrationDetails);
+            var registeredUser = await _userService.RegisterUserAsync(registrationDetails);
 
-            //await _emailService.SendEmailAsync();
+            var tokenData = await _verificationTokenService.GenerateVerificationTokenAsync(registeredUser);
+
+            await _emailService.SendEmailAsync(registrationDetails.Email, tokenData);
 
             return Unit.Value;
         }

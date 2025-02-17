@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using elastic_app.application.Services.User;
 using elastic_app.application.Services.Email;
+using elastic_app.application.Services.VerificationToken;
 using elastic_app.application.DTOs;
 using elastic_app.application.Validations;
 using FluentValidation;
@@ -18,6 +19,7 @@ namespace elastic_app.application
             _ = services.AddTransient<IUserService, UserService>();
             _ = services.AddTransient<IEmailService, EmailService>();
             _ = services.AddTransient<IValidator<RegisterRequest>, RegisterRequestValidation>();
+            _ = services.AddTransient<IVerificationTokenService, VerificationTokenService>();
             _ = services.AddMappings();
 
             return services;

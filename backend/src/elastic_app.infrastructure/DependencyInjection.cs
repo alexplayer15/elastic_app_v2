@@ -7,6 +7,7 @@ using Amazon;
 using elastic_app.infrastructure.Config;
 using elastic_app.infrastructure.Repositories;
 using elastic_app.domain.Abstractions;
+using elastic_app.infrastructure.Security;
 
 namespace elastic_app.infrastructure
 {
@@ -15,6 +16,8 @@ namespace elastic_app.infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             _ = services.AddTransient<IUserRepository, UserRepository>();
+            _ = services.AddTransient<IVerificationTokenRepository, VerificationTokenRepository>();
+            _ = services.AddTransient<ITokenProvider, StatelessTokenProvider>();
             _ = services.RegisterDynamoDb(configuration);
     
             return services;

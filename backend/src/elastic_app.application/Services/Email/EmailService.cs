@@ -2,6 +2,7 @@
 using System.Net;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using elastic_app.domain.Models;
 
 namespace elastic_app.application.Services.Email
 {
@@ -13,12 +14,12 @@ namespace elastic_app.application.Services.Email
         {
             _configuration = configuration;
         }
-        public async Task SendEmailAsync()
+        public async Task SendEmailAsync(string registrationEmail, TokenModel tokenData)
         {
             try
             {
                 using var mySmtpClient = ConfigureEmailClient();
-                using var myMail = ConfigureEmailMessage();
+                using var myMail = ConfigureEmailMessage(registrationEmail, tokenData.Token);
 
                 await mySmtpClient.SendMailAsync(myMail);
             }
@@ -41,15 +42,15 @@ namespace elastic_app.application.Services.Email
 
             return smtpClient;
         }
-        private MailMessage ConfigureEmailMessage()
+        private MailMessage ConfigureEmailMessage(string registrationEmail, string token)
         {
-            var from = new MailAddress(_configuration["EmailSettings:FromEmail"], "Your App Name");
-            var to = new MailAddress("toEmail");
+            var from = new MailAddress(_configuration["EmailSettings:FromEmail"], "Elastic App V2");
+            var to = new MailAddress(registrationEmail);
             var mail = new MailMessage(from, to)
             {
-                Subject = "subject",
+                Subject = "Hi, It Worked!",
                 SubjectEncoding = Encoding.UTF8,
-                Body = "email-body",
+                Body = $"It worked and if you see {token} that also worked!",
                 BodyEncoding = Encoding.UTF8,
                 IsBodyHtml = true
             };

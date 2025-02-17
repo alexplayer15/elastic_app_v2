@@ -14,7 +14,7 @@ namespace elastic_app.application.Services.User
             _userRepository = userRepository;
         }
 
-        public async Task RegisterUserAsync(RegisterRequest registrationDetails)
+        public async Task<UserModel> RegisterUserAsync(RegisterRequest registrationDetails)
         {
 
             if (registrationDetails == null)
@@ -47,6 +47,8 @@ namespace elastic_app.application.Services.User
             };
 
             await _userRepository.AddUserAsync(user);  
+
+            return user;
         }
         private string HashPassword(string password)
         {
