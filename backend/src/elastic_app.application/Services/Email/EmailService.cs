@@ -1,24 +1,30 @@
 ﻿using System.Net.Mail;
 using System.Net;
 using System.Text;
+using Amazon;
+using Amazon.SecretsManager;
+using Amazon.SecretsManager.Model;
 using Microsoft.Extensions.Configuration;
 using elastic_app.domain.Models;
+using System.Text.Json;
 
 namespace elastic_app.application.Services.Email
 {
     public class EmailService : IEmailService
     {
         private readonly IConfiguration _configuration;
+        private readonly IAmazonSecretsManager _secretsManager;
 
-        public EmailService(IConfiguration configuration)
+        public EmailService(IConfiguration configuration, IAmazonSecretsManager secretsManager)
         {
             _configuration = configuration;
+            _secretsManager = secretsManager;
         }
         public async Task SendEmailAsync(string registrationEmail, TokenModel tokenData)
         {
             try
             {
-                using var mySmtpClient = ConfigureEmailClient();
+                using var mySmtpClient = await ConfigureEmailClient();
                 using var myMail = ConfigureEmailMessage(registrationEmail, tokenData.Token);
 
                 await mySmtpClient.SendMailAsync(myMail);
@@ -28,14 +34,15 @@ namespace elastic_app.application.Services.Email
                 throw new ApplicationException("SmtpException occurred: " + ex.Message);
             }
         }
-        private SmtpClient ConfigureEmailClient()
+        private async Task<SmtpClient> ConfigureEmailClient()
         {
+            var secretEmailCredentials = await GetEmailCredentials();
             var smtpClient = new SmtpClient(_configuration["EmailSettings:SmtpServer"])
             {
                 Port = int.Parse(_configuration["EmailSettings:SmtpPort"]),
                 Credentials = new NetworkCredential(
-                    _configuration["EmailSettings:Username"],
-                    _configuration["EmailSettings:Password"]
+                    secretEmailCredentials.Username,
+                    secretEmailCredentials.Password
                 ),
                 EnableSsl = true
             };
@@ -57,5 +64,40 @@ namespace elastic_app.application.Services.Email
 
             return mail;
         }
+
+        private async Task<SecretModel> GetEmailCredentials()
+        {
+            string secretName = "SESEmailCredentials";
+            SecretModel secretData = null;
+
+            GetSecretValueRequest request = new GetSecretValueRequest
+            {
+                SecretId = secretName,
+                VersionStage = "AWSCURRENT",
+            };
+
+            GetSecretValueResponse response;
+
+            try
+            {
+                response = await _secretsManager.GetSecretValueAsync(request);
+
+                return JsonSerializer.Deserialize<SecretModel>(response.SecretString);
+            }
+            catch(InvalidRequestException e)
+            {
+                throw new Exception("Secret you have searched for was not valid", e);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to acquire secret from secret manager", e);
+            }
+        }
+    }
+
+    public class SecretModel
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
     }
 }
