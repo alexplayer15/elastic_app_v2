@@ -11,7 +11,7 @@ using elastic_app.application.Validations;
 using Mapster;
 using elastic_app.application.Services.VerificationToken;
 
-namespace elastic_app.application
+namespace elastic_app.application.Handlers
 {
     public class RegisterRequestHandler : IRequestHandler<RegisterRequestCommand, Unit>
     {
@@ -20,10 +20,10 @@ namespace elastic_app.application
         private readonly IEmailService _emailService;
         private readonly IVerificationTokenService _verificationTokenService;
         private readonly IValidator<RegisterRequest> _registerRequestValidator;
-        public RegisterRequestHandler(IUserService userService, 
-            IEmailService emailService, 
-            ITokenProvider tokenProvider, 
-            IValidator<RegisterRequest> registerRequestValidator, 
+        public RegisterRequestHandler(IUserService userService,
+            IEmailService emailService,
+            ITokenProvider tokenProvider,
+            IValidator<RegisterRequest> registerRequestValidator,
             IVerificationTokenService verificationTokenService)
         {
             _userService = userService;
@@ -56,7 +56,7 @@ namespace elastic_app.application
 
             var tokenData = await _verificationTokenService.GenerateVerificationTokenAsync(registeredUser);
 
-            await _emailService.SendEmailAsync(registrationDetails.Email, tokenData);
+            await _emailService.SendEmailAsync(registeredUser.Email, tokenData);
 
             return Unit.Value;
         }

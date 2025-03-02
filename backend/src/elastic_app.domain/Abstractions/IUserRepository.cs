@@ -9,5 +9,6 @@ namespace elastic_app.domain.Abstractions
         Task AddUserAsync(UserModel user);
         Task<UserModel?> GetUserDetailsAsync(string username);
         Task UpdateAsync(UserModel user);
+        Task UpdateEmailVerificationAsync(Guid userId);
     }
 }

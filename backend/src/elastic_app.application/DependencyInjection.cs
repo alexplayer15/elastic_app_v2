@@ -8,6 +8,7 @@ using FluentValidation;
 using Mapster;
 using MapsterMapper;
 using System.Reflection;
+using elastic_app.application.Services.EmailVerification;
 
 
 namespace elastic_app.application
@@ -18,6 +19,7 @@ namespace elastic_app.application
         {
             _ = services.AddTransient<IUserService, UserService>();
             _ = services.AddTransient<IEmailService, EmailService>();
+            _ = services.AddTransient<IEmailVerificationService, EmailVerificationService>();
             _ = services.AddTransient<IValidator<RegisterRequest>, RegisterRequestValidation>();
             _ = services.AddTransient<IVerificationTokenService, VerificationTokenService>();
             _ = services.AddMappings();

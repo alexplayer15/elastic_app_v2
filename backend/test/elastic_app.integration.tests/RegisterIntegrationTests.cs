@@ -8,13 +8,13 @@ using elastic_app.application.DTOs;
 
 namespace elastic_app.integration.tests
 {
-    public class ServiceIntegrationTests : IClassFixture<IntegrationTestClientFixture>
+    public class RegisterIntegrationTests : IClassFixture<IntegrationTestClientFixture>
     {
         private readonly IntegrationTestClient _integrationTestClient;
         private readonly IAmazonDynamoDB _dynamoDbClient;
         private const string Register = "/api/register";
 
-        public ServiceIntegrationTests(IntegrationTestClientFixture fixture)
+        public RegisterIntegrationTests(IntegrationTestClientFixture fixture)
         {
             _integrationTestClient = fixture._client;
             _dynamoDbClient = fixture._dynamoDbClient;
@@ -28,8 +28,7 @@ namespace elastic_app.integration.tests
          
             var registrationDetailsJson = JsonSerializer.Serialize(registrationDetails);
 
-            _integrationTestClient
-                .SetDefaultHeaders();
+            _integrationTestClient.SetDefaultHeaders();
 
             //Act
             await _integrationTestClient.MakeRequestAsync(HttpMethod.Post, Register, registrationDetails);

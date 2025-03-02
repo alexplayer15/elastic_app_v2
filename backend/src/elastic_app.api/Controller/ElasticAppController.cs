@@ -33,5 +33,25 @@ namespace elastic_app.api.Controller
                 return StatusCode(500, new { error = "An unexpected error occurred.", details = ex.Message });
             }
         }
+
+        [HttpGet("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+        {
+            try
+            {
+                await _mediator.Send(new EmailVerificationCommand(token));
+
+                return Ok(new { message = "Email verified!" });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { errors = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An unexpected error occurred.", details = ex.Message });
+            }
+        }
     }
 }
+

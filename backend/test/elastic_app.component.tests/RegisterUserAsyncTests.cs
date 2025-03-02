@@ -1,13 +1,7 @@
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
-using FluentValidation;
 using Amazon.DynamoDBv2.DataModel;
 using elastic_app.application.Services.User;
 using elastic_app.common.tests.Builders;
-using elastic_app.application.DTOs;
-using elastic_app.application.Validations;
-using elastic_app.infrastructure.Config;
 using elastic_app.domain.Abstractions;
 using elastic_app.infrastructure.Repositories;
 using elastic_app.domain.Models;

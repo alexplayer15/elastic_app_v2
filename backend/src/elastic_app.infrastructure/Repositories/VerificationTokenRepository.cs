@@ -1,6 +1,7 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 using elastic_app.domain.Models;
 using elastic_app.domain.Abstractions;
+using Amazon.DynamoDBv2.DocumentModel;
 
 namespace elastic_app.infrastructure.Repositories
 {
@@ -21,6 +22,18 @@ namespace elastic_app.infrastructure.Repositories
             {
                 Console.WriteLine(ex); //Add ILogger here later
             }
+        }
+
+        public async Task<TokenModel> GetTokenData(string token)
+        {
+            var search = _dynamoDbContext.ScanAsync<TokenModel>(new[]
+            {
+                new ScanCondition(nameof(TokenModel.Token), ScanOperator.Equal, token)
+            });
+
+            var result = await search.GetRemainingAsync();
+
+            return result.First();
         }
     }
 }

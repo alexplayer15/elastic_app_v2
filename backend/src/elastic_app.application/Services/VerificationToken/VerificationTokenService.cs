@@ -24,7 +24,7 @@ namespace elastic_app.application.Services.VerificationToken
                 UserId = registeredUser.Id,
                 Token = tokenString,
                 CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddMinutes(15)
+                ExpiresAt = DateTime.UtcNow.AddMinutes(30)
             };
 
             await _verificationTokenRepository.AddTokenAsync(token);

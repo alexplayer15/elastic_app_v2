@@ -51,13 +51,16 @@ namespace elastic_app.application.Services.Email
         }
         private MailMessage ConfigureEmailMessage(string registrationEmail, string token)
         {
+            string baseUrl = "http://localhost:8081/api/verify-email";
+            string verificationLink = $"{baseUrl}?token={Uri.EscapeDataString(token)}";
+
             var from = new MailAddress(_configuration["EmailSettings:FromEmail"], "Elastic App V2");
             var to = new MailAddress(registrationEmail);
             var mail = new MailMessage(from, to)
             {
                 Subject = "Hi, It Worked!",
                 SubjectEncoding = Encoding.UTF8,
-                Body = $"It worked and if you see {token} that also worked!",
+                Body = $"It worked and if you see {verificationLink} that also worked!",
                 BodyEncoding = Encoding.UTF8,
                 IsBodyHtml = true
             };
@@ -68,7 +71,6 @@ namespace elastic_app.application.Services.Email
         private async Task<SecretModel> GetEmailCredentials()
         {
             string secretName = "SESEmailCredentials";
-            SecretModel secretData = null;
 
             GetSecretValueRequest request = new GetSecretValueRequest
             {

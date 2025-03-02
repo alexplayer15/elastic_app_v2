@@ -10,6 +10,7 @@ namespace elastic_app.infrastructure.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly IDynamoDBContext _dynamoDbContext;
+        private readonly IAmazonDynamoDB _dynamoDbClient;
         public UserRepository(IDynamoDBContext dynamoDbContext)
         {
             _dynamoDbContext = dynamoDbContext;
@@ -72,6 +73,32 @@ namespace elastic_app.infrastructure.Repositories
                 throw;
             }
         }
+
+        //think about replacing these calls with the lower level dynamoDbClient
+        public async Task UpdateEmailVerificationAsync(Guid userId)
+        {
+            var search = _dynamoDbContext.ScanAsync<UserModel>(new[]
+            {
+                new ScanCondition(nameof(UserModel.Id), ScanOperator.Equal, userId)
+            });
+
+            var results = await search.GetRemainingAsync();
+
+            var user = results.First();
+
+            if (user != null)
+            {
+                user.EmailVerified = true;
+
+                await _dynamoDbContext.SaveAsync(user);
+            }
+            else
+            {
+                Console.WriteLine("User not found or already verified.");
+            }
+        }
+
+
 
     }
 }
