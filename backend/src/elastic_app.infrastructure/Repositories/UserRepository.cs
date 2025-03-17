@@ -10,7 +10,6 @@ namespace elastic_app.infrastructure.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly IDynamoDBContext _dynamoDbContext;
-        private readonly IAmazonDynamoDB _dynamoDbClient;
         public UserRepository(IDynamoDBContext dynamoDbContext)
         {
             _dynamoDbContext = dynamoDbContext;

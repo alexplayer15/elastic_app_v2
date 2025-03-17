@@ -45,7 +45,7 @@ namespace elastic_app.common.tests.Builders
             {
                 _forename = "Alex";
                 _surname = "Player";
-                _email = "example15@example.com";
+                _email = "alexplayer15@icloud.com";
                 _username = "AlexPlayerTest15";
                 _password = "thisIsNotReal22!";
                 _reEnterPassword = "thisIsNotReal22!";
