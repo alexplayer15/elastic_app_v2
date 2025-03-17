@@ -1,5 +1,5 @@
 using elastic_app.api.ServiceConfigurations;
-using elastic_app.application;
+using elastic_app.application.Handlers;
 using MediatR;
 using NLog;
 
@@ -14,6 +14,8 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     builder.Services.AddMediatR(typeof(RegisterRequestHandler).Assembly);
+    builder.Services.AddMediatR(typeof(EmailVerificationHandler).Assembly);
+    builder.Configuration.AddUserSecrets<Program>();
 
     var app = builder.Build();
     app.UseHttpsRedirection();

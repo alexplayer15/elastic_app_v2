@@ -7,5 +7,8 @@ namespace elastic_app.domain.Abstractions
         Task<bool> CheckEmailExistsAsync(string email);
         Task<bool> CheckUsernameExistsAsync(string username);
         Task AddUserAsync(UserModel user);
+        Task<UserModel?> GetUserDetailsAsync(string username);
+        Task UpdateAsync(UserModel user);
+        Task UpdateEmailVerificationAsync(Guid userId);
     }
 }

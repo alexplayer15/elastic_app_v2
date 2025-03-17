@@ -4,9 +4,12 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Runtime;
 using Amazon;
-using elastic_app.infrastructure.Config;
+using elastic_app.domain;
+using elastic_app.infrastructure.Settings;
 using elastic_app.infrastructure.Repositories;
 using elastic_app.domain.Abstractions;
+using elastic_app.infrastructure.Security;
+using Amazon.SecretsManager;
 
 namespace elastic_app.infrastructure
 {
@@ -15,7 +18,10 @@ namespace elastic_app.infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             _ = services.AddTransient<IUserRepository, UserRepository>();
+            _ = services.AddTransient<IVerificationTokenRepository, VerificationTokenRepository>();
+            _ = services.AddTransient<ITokenProvider, StatelessTokenProvider>();
             _ = services.RegisterDynamoDb(configuration);
+            _ = services.RegisterSecretsManager(configuration);
     
             return services;
         }
@@ -42,6 +48,20 @@ namespace elastic_app.infrastructure
                 : services.AddSingleton<IAmazonDynamoDB>(_ => new AmazonDynamoDBClient(clientConfig));
 
             _ = services.AddSingleton<IDynamoDBContext, DynamoDBContext>();
+            return services;
+        }
+
+        private static IServiceCollection RegisterSecretsManager(this IServiceCollection services, IConfiguration configuration)
+        {
+            var secretsManagerConfig = new AmazonSecretsManagerConfig
+            {
+                ServiceURL = "http://localstack:4566",
+                AuthenticationRegion = "eu-west-2"
+            };
+
+            _ = services.AddSingleton<IAmazonSecretsManager>(_ =>
+                new AmazonSecretsManagerClient(new BasicAWSCredentials("DUMMYACCESSKEY", "DUMMYSECRETKEY"), secretsManagerConfig));
+
             return services;
         }
     }

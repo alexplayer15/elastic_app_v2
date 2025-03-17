@@ -2,7 +2,7 @@
 
 namespace elastic_app.domain.Models
 {
-    [DynamoDBTable("UserData")]
+    [DynamoDBTable(DynamoDbConstants.UserData)]
     public record UserModel
     {
         [property: DynamoDBHashKey("id")] public Guid Id { get; set; }

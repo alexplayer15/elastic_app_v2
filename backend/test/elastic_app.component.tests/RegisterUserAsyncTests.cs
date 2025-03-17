@@ -1,13 +1,7 @@
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
-using FluentValidation;
 using Amazon.DynamoDBv2.DataModel;
 using elastic_app.application.Services.User;
 using elastic_app.common.tests.Builders;
-using elastic_app.application.DTOs;
-using elastic_app.application.Validations;
-using elastic_app.infrastructure.Config;
 using elastic_app.domain.Abstractions;
 using elastic_app.infrastructure.Repositories;
 using elastic_app.domain.Models;
@@ -18,15 +12,13 @@ namespace elastic_app.component.tests
     {
         private readonly IUserService _userService;
         private readonly IUserRepository _userRepository;
-        private readonly IValidator<RegisterRequest> _registerRequestValidator;
         private readonly IDynamoDBContext _mockDynamoDbContext;
 
         public RegisterUserAsyncTest()
         {
             _mockDynamoDbContext = Substitute.For<IDynamoDBContext>();
-            _registerRequestValidator = new RegisterRequestValidation();
             _userRepository = new UserRepository(_mockDynamoDbContext);
-            _userService = new UserService(_userRepository, _registerRequestValidator);
+            _userService = new UserService(_userRepository);
         }
 
         [Fact]

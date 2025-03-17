@@ -4,6 +4,7 @@
   "surname": { "S": "Player" },
   "username": { "S": "AlexPlayer15" },
   "email": { "S": "example@example.com" },
+  "emailVerified": { "N": "0" },
   "password": { "S": "FakePassword12!" },
   "createdAt": { "S": "2025-01-18T00:00:00" }
 }

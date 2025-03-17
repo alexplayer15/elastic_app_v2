@@ -8,7 +8,7 @@ using elastic_app.domain.Abstractions;
 
 namespace elastic_app.infrastructure.Security
 {
-    internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvider
+    internal sealed class StatelessTokenProvider(IConfiguration configuration) : ITokenProvider
     {
         public string Create(UserModel userModel)
         {

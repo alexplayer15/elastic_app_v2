@@ -1,4 +1,4 @@
-﻿namespace elastic_app.infrastructure.Config
+﻿namespace elastic_app.infrastructure.Settings
 {
     public interface IDynamoDbSettings
     {

@@ -1,10 +1,8 @@
-﻿using static System.Net.Mime.MediaTypeNames;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using elastic_app.application.DTOs;
 using System.Net;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using System.Net.Http.Headers;
+
 
 namespace elastic_app.integration.tests
 {

@@ -3,12 +3,14 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using elastic_app.domain.Models;
 using elastic_app.domain.Abstractions;
+using Amazon.DynamoDBv2.Model;
 
 namespace elastic_app.infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
         private readonly IDynamoDBContext _dynamoDbContext;
+        private readonly IAmazonDynamoDB _dynamoDbClient;
         public UserRepository(IDynamoDBContext dynamoDbContext)
         {
             _dynamoDbContext = dynamoDbContext;
@@ -43,5 +45,60 @@ namespace elastic_app.infrastructure.Repositories
             }
             
         }
+        public async Task<UserModel?> GetUserDetailsAsync(string username)
+        {
+            var search = _dynamoDbContext.ScanAsync<UserModel>(new[]
+            {
+                new ScanCondition(nameof(UserModel.Username), ScanOperator.Equal, username)
+            });
+
+            var results = await search.GetRemainingAsync();
+            return results.FirstOrDefault();
+        }
+
+        public async Task UpdateAsync(UserModel user)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user), "User object cannot be null");
+            }
+
+            try
+            {
+                await _dynamoDbContext.SaveAsync(user);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating user: {ex.Message}");
+                throw;
+            }
+        }
+
+        //think about replacing these calls with the lower level dynamoDbClient
+        public async Task UpdateEmailVerificationAsync(Guid userId)
+        {
+            var search = _dynamoDbContext.ScanAsync<UserModel>(new[]
+            {
+                new ScanCondition(nameof(UserModel.Id), ScanOperator.Equal, userId)
+            });
+
+            var results = await search.GetRemainingAsync();
+
+            var user = results.First();
+
+            if (user != null)
+            {
+                user.EmailVerified = true;
+
+                await _dynamoDbContext.SaveAsync(user);
+            }
+            else
+            {
+                Console.WriteLine("User not found or already verified.");
+            }
+        }
+
+
+
     }
 }

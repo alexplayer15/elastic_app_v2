@@ -1,0 +1,7 @@
+{
+  "id": { "S": "testId" },
+  "userId": { "S": "d2b19b7b-7289-4f7f-9d36-1f6a1cdcb8f6" },
+  "token": { "S": "registeredToken" },
+  "createdAt": { "S": "2025-01-18T00:00:00" },
+  "expiresAt": { "S": "2025-01-18T00:30:00" }
+}

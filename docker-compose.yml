@@ -16,6 +16,8 @@ services:
     container_name: localstack
     hostname: localstack
     image: localstack/localstack:2.0
+    secrets:
+      - email_credentials
     ports:
       - '4566:4566'
       - '4510-4559:4510-4559'
@@ -28,3 +30,6 @@ services:
     volumes:
       - ./localStackScripts:/etc/localstack/init/ready.d
       - '/var/run/docker.sock:/var/run/docker.sock'
+secrets:
+  email_credentials:
+    file: ./.env  
