@@ -19,6 +19,11 @@ on:
         type: string
         description: 'terraform version to use'
         default: '1.9.5'
+      terraform_directory:
+        required: false
+        type: string 
+        description: directory terraform main.tf file is located 
+        default: terraform
       destroy_all_resources:
         required: false
         type: boolean
@@ -46,6 +51,9 @@ jobs:
   terraform-cicd:
     if: ${{ !inputs.run_destroy }}
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.terraform_directory }}
 
     steps:
     - name: Checkout code
@@ -70,18 +78,16 @@ jobs:
         aws-region: 'eu-west-2'  
 
     - name: Terraform init
+      working-directory: ${{ inputs.terraform_directory }}
       run: |
-        cd main
         terraform init
 
     - name: Terraform validate
       run: |
-        cd main
         terraform validate
 
     - name: Terraform plan 
       run: |
-        cd main
         terraform plan -out=../terraform.plan
 
     # - name: Install Terratest Dependencies
@@ -96,7 +102,6 @@ jobs:
 
     - name: Apply Terraform
       run: |
-        cd main
         terraform apply --auto-approve
 
         
