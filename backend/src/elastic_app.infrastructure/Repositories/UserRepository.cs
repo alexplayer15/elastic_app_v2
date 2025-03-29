@@ -1,18 +1,20 @@
-﻿using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
+﻿using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using elastic_app.domain.Models;
 using elastic_app.domain.Abstractions;
-using Amazon.DynamoDBv2.Model;
+using Microsoft.Extensions.Logging;
+
 
 namespace elastic_app.infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
         private readonly IDynamoDBContext _dynamoDbContext;
-        public UserRepository(IDynamoDBContext dynamoDbContext)
+        private readonly ILogger<UserRepository> _logger;
+        public UserRepository(IDynamoDBContext dynamoDbContext, ILogger<UserRepository> logger)
         {
             _dynamoDbContext = dynamoDbContext;
+            _logger = logger;
         }
         public async Task<bool> CheckEmailExistsAsync(string email)
         {
@@ -40,7 +42,7 @@ namespace elastic_app.infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex); //Add ILogger here later
+                throw new Exception(ex.Message);
             }
             
         }
@@ -68,8 +70,7 @@ namespace elastic_app.infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating user: {ex.Message}");
-                throw;
+                throw new Exception($"Error updating user: {ex.Message}");
             }
         }
 
@@ -93,11 +94,8 @@ namespace elastic_app.infrastructure.Repositories
             }
             else
             {
-                Console.WriteLine("User not found or already verified.");
+                _logger.LogError("User not found or already verified.");
             }
         }
-
-
-
     }
 }

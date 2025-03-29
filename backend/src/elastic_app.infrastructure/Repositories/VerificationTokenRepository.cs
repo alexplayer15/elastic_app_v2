@@ -20,7 +20,7 @@ namespace elastic_app.infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex); //Add ILogger here later
+                throw new Exception(ex.Message);
             }
         }
 

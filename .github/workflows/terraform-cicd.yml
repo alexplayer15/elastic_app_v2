@@ -1,0 +1,102 @@
+name: "Terraform CI/CD"
+run-name: "Build #${{ github.run_number }} - ${{ github.event.head_commit.message }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      # username:
+      #   required: true
+      #   type: string
+      #   description: 'username for go mod init'
+      #   default: 'alexplayer15'
+      # directory:
+      #   required: true
+      #   type: string
+      #   description: 'directory for go mod init'
+      #   default: 'elastic_app_v2'
+      terraform_version: 
+        required: false
+        type: string
+        description: 'terraform version to use'
+        default: '1.9.5'
+      destroy_all_resources:
+        required: false
+        type: boolean
+        description: 'check this to destroy all existing resources'
+        default: false
+
+jobs:
+  terraform-destroy:
+    if: ${{ inputs.run_destroy }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ inputs.terraform_version }}
+
+    - name: Destroy Terraform 
+      run: |
+        cd main
+         terraform destroy --auto-approve
+  terraform-cicd:
+    if: ${{ !inputs.run_destroy }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # - name: Set up Go
+    #   uses: actions/setup-go@v3
+    #   with:
+    #     go-version: '1.23.0' 
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ inputs.terraform_version }}
+        terraform_wrapper: false
+
+    - name: Set up AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: 'eu-west-2'  
+
+    - name: Terraform init
+      run: |
+        cd main
+        terraform init
+
+    - name: Terraform validate
+      run: |
+        cd main
+        terraform validate
+
+    - name: Terraform plan 
+      run: |
+        cd main
+        terraform plan -out=../terraform.plan
+
+    # - name: Install Terratest Dependencies
+    #   run: |
+    #     go mod init github.com/${{ inputs.username }}/${{ inputs.directory }}
+    #     go mod tidy
+
+    # - name: Run Terratest
+    #   run: |
+    #     cd test
+    #     go test -v -timeout 30m ./...
+
+    - name: Apply Terraform
+      run: |
+        cd main
+        terraform apply --auto-approve
+
+        
