@@ -45,8 +45,8 @@ jobs:
         terraform_version: ${{ inputs.terraform_version }}
 
     - name: Destroy Terraform 
+      working-directory: ${{ inputs.terraform_directory }}
       run: |
-        cd main
          terraform destroy --auto-approve
   terraform-cicd:
     if: ${{ !inputs.run_destroy }}
