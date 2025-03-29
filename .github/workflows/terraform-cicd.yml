@@ -34,6 +34,9 @@ jobs:
   terraform-destroy:
     if: ${{ inputs.destroy_all_resources }}
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.terraform_directory }}
 
     steps:
     - name: Checkout code
@@ -44,8 +47,11 @@ jobs:
       with:
         terraform_version: ${{ inputs.terraform_version }}
 
+    - name: Terraform init
+      run: |
+        terraform init
+
     - name: Destroy Terraform 
-      working-directory: ${{ inputs.terraform_directory }}
       run: |
          terraform destroy --auto-approve
   terraform-cicd:
@@ -78,7 +84,6 @@ jobs:
         aws-region: 'eu-west-2'  
 
     - name: Terraform init
-      working-directory: ${{ inputs.terraform_directory }}
       run: |
         terraform init
 
