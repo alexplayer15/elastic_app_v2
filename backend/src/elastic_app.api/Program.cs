@@ -16,6 +16,7 @@ try
     builder.Services.AddMediatR(typeof(RegisterRequestHandler).Assembly);
     builder.Services.AddMediatR(typeof(EmailVerificationHandler).Assembly);
     builder.Configuration.AddUserSecrets<Program>();
+    builder.Services.AddLogging();
 
     var app = builder.Build();
     app.UseHttpsRedirection();
