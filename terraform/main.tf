@@ -11,3 +11,10 @@ terraform {
 module "network" {
   source = "./network"
 }
+
+module "load_balancer" {
+  source = "./load_balancer"
+  alb_pub_sub_one_id = module.network.alb_pub_sub_one_id
+  alb_pub_sub_two_id = module.network.alb_pub_sub_two_id
+  alb_sg_id = module.network.alb_sg_id
+}
