@@ -32,7 +32,6 @@ on:
 
 jobs:
   terraform-cicd:
-    needs: terraform-setup
     runs-on: ubuntu-latest
     defaults:
       run:
