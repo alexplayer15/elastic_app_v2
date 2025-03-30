@@ -59,8 +59,8 @@ resource "aws_route_table_association" "ecs_priv_sub_association" {
   route_table_id = aws_route_table.main_priv_sub_route_table.id
 }
 
-resource "aws_vpc_endpoint" "s3" {
-  vpc_id       = aws_vpc.main.id
+resource "aws_vpc_endpoint" "dynamoDb_vpc_endpoint" {
+  vpc_id       = aws_vpc.main_vpc.id
   service_name = "com.amazonaws.eu-west-2.dynamodb"
   vpc_endpoint_type = "Gateway"
   route_table_id = aws_route_table.main_priv_sub_route_table.id
@@ -119,7 +119,7 @@ resource "aws_security_group" "alb_sg" {
 }
 
 resource "aws_security_group" "ecs_task_sg" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = aws_vpc.main_vpc.id
 
   ingress {
     from_port   = 80
