@@ -59,6 +59,7 @@ jobs:
   
   terraform-destroy:
     if: ${{ inputs.destroy_all_resources }}
+    needs: terraform-setup
     runs-on: ubuntu-latest
     defaults:
        run:
@@ -70,6 +71,7 @@ jobs:
 
   terraform-cicd:
     if: ${{ !inputs.destroy_all_resources }}
+    needs: terraform-setup
     runs-on: ubuntu-latest
     defaults:
       run:
