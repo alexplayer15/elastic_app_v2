@@ -31,7 +31,8 @@ on:
         default: false
 
 jobs:
-  terraform-setup:
+  terraform-cicd:
+    needs: terraform-setup
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -56,39 +57,24 @@ jobs:
     - name: Terraform init
       run: |
         terraform init
-  
-  terraform-destroy:
-    if: ${{ inputs.destroy_all_resources }}
-    needs: terraform-setup
-    runs-on: ubuntu-latest
-    defaults:
-       run:
-        working-directory: ${{ inputs.terraform_directory }}
-    steps:
-    - name: Destroy Terraform 
-      run: |
-         terraform destroy --auto-approve
-
-  terraform-cicd:
-    if: ${{ !inputs.destroy_all_resources }}
-    needs: terraform-setup
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{ inputs.terraform_directory }}
-
-    steps:
 
     # - name: Set up Go
     #   uses: actions/setup-go@v3
     #   with:
     #     go-version: '1.23.0' 
 
+    - name: Destroy Terraform 
+      if: ${{ inputs.destroy_all_resources }}
+      run: |
+         terraform destroy --auto-approve
+
     - name: Terraform validate
+      if: ${{ !inputs.destroy_all_resources }}
       run: |
         terraform validate
 
     - name: Terraform plan 
+      if: ${{ !inputs.destroy_all_resources }}
       run: |
         terraform plan -out=../terraform.plan
 
@@ -103,6 +89,7 @@ jobs:
     #     go test -v -timeout 30m ./...
 
     - name: Apply Terraform
+      if: ${{ !inputs.destroy_all_resources }}
       run: |
         terraform apply --auto-approve
 
