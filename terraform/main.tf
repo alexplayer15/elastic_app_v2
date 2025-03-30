@@ -3,7 +3,8 @@ terraform {
     bucket         = "elastic-app-v2-terraform-state"  
     key            = "terraform.tfstate"  
     region         = "eu-west-2"                
-    encrypt        = true                   
+    encrypt        = true   
+    dynamodb_table = "elastic-app-v2-state-locking"                 
   }
 }
 
