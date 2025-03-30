@@ -52,7 +52,7 @@ resource "aws_subnet" "ecs_private_subnet_one" {
 
 resource "aws_subnet" "ecs_private_subnet_two" {
   vpc_id     = aws_vpc.main_vpc.id
-  cidr_block = "10.0.2.0/24"
+  cidr_block = "10.0.3.0/24"
 
   tags = {
     Name = "ECS_priv_sub"
