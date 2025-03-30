@@ -1,11 +1,11 @@
-variable "ecs_priv_sub_one_id"{
+variable "alb_pub_sub_one_id" {
     type = string 
-    description = "Private subnet id ECS tasks are in"
+    description = "Public subnet for ALB"
 }
 
-variable "ecs_priv_sub_two_id"{
+variable "alb_pub_sub_two_id" {
     type = string 
-    description = "Private subnet id ECS tasks are in"
+    description = "Public subnet for ALB"
 }
 
 variable "alb_sg_id"{
