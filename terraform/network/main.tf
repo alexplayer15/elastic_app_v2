@@ -63,7 +63,7 @@ resource "aws_vpc_endpoint" "dynamoDb_vpc_endpoint" {
   vpc_id       = aws_vpc.main_vpc.id
   service_name = "com.amazonaws.eu-west-2.dynamodb"
   vpc_endpoint_type = "Gateway"
-  route_table_id = aws_route_table.main_priv_sub_route_table.id
+  route_table_ids = [aws_route_table.main_priv_sub_route_table.id]
 
   tags = {
     Name = "DynamoDB VPC Endpoint"
@@ -79,7 +79,7 @@ resource "aws_vpc_endpoint" "ecr_interface_vpc_endpoint" {
     aws_security_group.ecr_vpc_endpoint_sg.id
   ]
 
-  subnet_id = aws_subnet.ecs_private_subnet.id
+  subnet_ids = [aws_subnet.ecs_private_subnet.id]
 
   private_dns_enabled = true
 
