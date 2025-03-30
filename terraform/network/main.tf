@@ -1,4 +1,4 @@
-//public networks
+//Public networks
 
 resource "aws_vpc" "main_vpc" {
   cidr_block       = "10.0.0.0/16"
@@ -29,7 +29,7 @@ resource "aws_route_table" "main_pub_sub_route_table" {
   vpc_id = aws_vpc.main_vpc.id
 
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block = var.allow_all_CIDR
     gateway_id = aws_internet_gateway.main_vpc_igw.id
   }
 }
@@ -70,9 +70,102 @@ resource "aws_vpc_endpoint" "s3" {
   }
 }
 
-# resource "aws_vpc_endpoint" "ecr_interface_vpc_endpoint" {
-#   vpc_id            = aws_vpc.main.id
-#   service_name      = "com.amazonaws.eu-west-2.ecr"
-#   vpc_endpoint_type = "Interface"
-# }
+resource "aws_vpc_endpoint" "ecr_interface_vpc_endpoint" {
+  vpc_id            = aws_vpc.main_vpc.id
+  service_name      = "com.amazonaws.eu-west-2.ecr"
+  vpc_endpoint_type = "Interface"
 
+  security_group_ids = [
+    aws_security_group.ecr_vpc_endpoint_sg.id
+  ]
+
+  subnet_id = aws_subnet.ecs_private_subnet.id
+
+  private_dns_enabled = true
+
+  tags = {
+    Name = "ECR VPC Endpoint"
+  }
+}
+
+//Security groups
+
+resource "aws_security_group" "pub_sub_sg" {
+  vpc_id = aws_vpc.main_vpc.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [var.allow_all_CIDR]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.allow_all_CIDR]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"  
+    cidr_blocks = [var.allow_all_CIDR]
+  }
+
+  tags = {
+    Name = "ALB Security Group"
+  }
+}
+
+resource "aws_security_group" "priv_sub_sg" {
+  vpc_id = aws_vpc.main.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    security_groups = [aws_security_group.alb_sg.id]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    security_groups = [aws_security_group.alb_sg.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"  
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "Priv Sub security group"
+  }
+}
+
+resource "aws_security_group" "ecr_vpc_endpoint_sg" {
+  vpc_id = aws_vpc.main_vpc.id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    security_groups = [aws_security_group.ecs_task_sg.id] 
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"  
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "ECR VPC Endpoint Security Group"
+  }
+}
