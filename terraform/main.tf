@@ -14,6 +14,7 @@ module "network" {
 
 module "load_balancer" {
   source = "./load_balancer"
-  ecs_priv_sub_id = module.network.ecs_priv_sub_id
+  ecs_priv_sub_one_id = module.network.ecs_priv_sub_one_id
+  ecs_priv_sub_two_id = module.network.ecs_priv_sub_two_id
   alb_sg_id = module.network.alb_sg_id
 }
