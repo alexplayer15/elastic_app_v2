@@ -89,8 +89,7 @@ resource "aws_vpc_endpoint" "ecr_interface_vpc_endpoint" {
 }
 
 //Security groups
-
-resource "aws_security_group" "pub_sub_sg" {
+resource "aws_security_group" "alb_sg" {
   vpc_id = aws_vpc.main_vpc.id
 
   ingress {
@@ -119,7 +118,7 @@ resource "aws_security_group" "pub_sub_sg" {
   }
 }
 
-resource "aws_security_group" "priv_sub_sg" {
+resource "aws_security_group" "ecs_task_sg" {
   vpc_id = aws_vpc.main.id
 
   ingress {

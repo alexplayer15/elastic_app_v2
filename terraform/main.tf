@@ -11,3 +11,9 @@ terraform {
 module "network" {
   source = "./network"
 }
+
+module "load_balancer" {
+  source = "./load_balancer"
+  ecs_priv_sub_id = module.network.ecs_priv_sub_id
+  alb_sg_id = module.network.alb_sg_id
+}
