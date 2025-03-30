@@ -44,7 +44,7 @@ resource "aws_route_table_association" "alb_pub_sub_assocation" {
 resource "aws_subnet" "ecs_private_subnet_one" {
   vpc_id     = aws_vpc.main_vpc.id
   cidr_block = "10.0.2.0/24"
-  availability_zone = "eu-west-1"
+  availability_zone = "eu-west-2a"
 
   tags = {
     Name = "ECS_priv_sub"
@@ -54,7 +54,7 @@ resource "aws_subnet" "ecs_private_subnet_one" {
 resource "aws_subnet" "ecs_private_subnet_two" {
   vpc_id     = aws_vpc.main_vpc.id
   cidr_block = "10.0.3.0/24"
-  availability_zone = "eu-west-2"
+  availability_zone = "eu-west-2b"
 
   tags = {
     Name = "ECS_priv_sub"
