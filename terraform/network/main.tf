@@ -13,6 +13,7 @@ resource "aws_vpc" "main_vpc" {
 resource "aws_subnet" "alb_public_subnet_one" {
   vpc_id     = aws_vpc.main_vpc.id
   cidr_block = "10.0.1.0/24"
+  availability_zone = "eu-west-2a"
 
   tags = {
     Name = "ALB_pub_sub"
@@ -22,6 +23,7 @@ resource "aws_subnet" "alb_public_subnet_one" {
 resource "aws_subnet" "alb_public_subnet_two" {
   vpc_id     = aws_vpc.main_vpc.id
   cidr_block = "10.0.2.0/24"
+  availability_zone = "eu-west-2b"
 
   tags = {
     Name = "ALB_pub_sub"
