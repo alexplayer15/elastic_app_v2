@@ -30,6 +30,9 @@ COPY backend/test/elastic_app.api.tests/ backend/test/elastic_app.api.tests/
 WORKDIR source/backend/test/elastic_app.api.tests/
 RUN dotnet test -c Release --logger trx --results-directory /app/TestResults/ .
 
+FROM scratch AS unit-test-results
+COPY --from=unit-tests /app/TestResults/*.trx .
+
 FROM build AS publish
 RUN dotnet publish $PROJECT_NAME -c Release -o /app/publish /p:UseAppHost=false
 
