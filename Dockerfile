@@ -34,6 +34,16 @@ RUN dotnet test -c Release --logger trx --results-directory /app/TestResults/ .
 FROM scratch AS unit-test-results
 COPY --from=unit-tests /app/TestResults/*.trx .
 
+FROM build AS component-tests
+WORKDIR /source
+COPY backend/test/elastic_app.common.tests/ backend/test/elastic_app.common.tests/
+COPY backend/test/elastic_app.component.tests/ backend/test/elastic_app.component.tests/
+WORKDIR /source/backend/test/elastic_app.component.tests/
+RUN dotnet test -c Release --logger trx --results-directory /app/TestResults/ .
+
+FROM scratch AS component-test-results
+COPY --from=unit-tests /app/TestResults/*.trx .
+
 FROM build AS publish
 RUN dotnet publish $PROJECT_NAME -c Release -o /app/publish /p:UseAppHost=false
 
