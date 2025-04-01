@@ -24,6 +24,20 @@ COPY backend/src/elastic_app.infrastructure/ backend/src/elastic_app.infrastruct
 WORKDIR /source/backend/src/elastic_app.api
 RUN dotnet build $PROJECT_NAME -c Release -o /app/build
 
+FROM build AS unit-tests
+WORKDIR /source
+COPY backend/test/elastic_app.common.tests/ backend/test/elastic_app.common.tests/
+COPY backend/test/elastic_app.api.tests/ backend/test/elastic_app.api.tests/
+WORKDIR /source/backend/test/elastic_app.api.tests/
+RUN dotnet test -c Release --logger trx --results-directory /app/TestResults/ .
+
+FROM build AS component-tests
+WORKDIR /source
+COPY backend/test/elastic_app.common.tests/ backend/test/elastic_app.common.tests/
+COPY backend/test/elastic_app.component.tests/ backend/test/elastic_app.component.tests/
+WORKDIR /source/backend/test/elastic_app.component.tests/
+RUN dotnet test -c Release --logger trx --results-directory /app/TestResults/ .
+
 FROM build AS publish
 RUN dotnet publish $PROJECT_NAME -c Release -o /app/publish /p:UseAppHost=false
 
