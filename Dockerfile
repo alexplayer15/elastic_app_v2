@@ -27,7 +27,7 @@ RUN dotnet build $PROJECT_NAME -c Release -o /app/build
 FROM build AS unit-tests
 WORKDIR /source
 COPY backend/test/elastic_app.api.tests/ backend/test/elastic_app.api.tests/
-WORKDIR source/backend/test/elastic_app.api.tests/
+WORKDIR /source/backend/test/elastic_app.api.tests/
 RUN dotnet test -c Release --logger trx --results-directory /app/TestResults/ .
 
 FROM scratch AS unit-test-results

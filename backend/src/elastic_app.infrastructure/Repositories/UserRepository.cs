@@ -10,11 +10,9 @@ namespace elastic_app.infrastructure.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly IDynamoDBContext _dynamoDbContext;
-        private readonly ILogger<UserRepository> _logger;
-        public UserRepository(IDynamoDBContext dynamoDbContext, ILogger<UserRepository> logger)
+        public UserRepository(IDynamoDBContext dynamoDbContext)
         {
             _dynamoDbContext = dynamoDbContext;
-            _logger = logger;
         }
         public async Task<bool> CheckEmailExistsAsync(string email)
         {
@@ -94,7 +92,7 @@ namespace elastic_app.infrastructure.Repositories
             }
             else
             {
-                _logger.LogError("User not found or already verified.");
+                throw new Exception("User not found or already verified.");
             }
         }
     }
