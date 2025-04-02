@@ -1,0 +1,41 @@
+name: Convert PR to Draft if Missing Reviewers
+
+on:
+  pull_request:
+    types:
+      - opened
+      - ready_for_review
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  check-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check and Convert to Draft
+        run: |
+          REVIEWERS_COUNT=$(jq '.pull_request.requested_reviewers | length' "$GITHUB_EVENT_PATH")
+          AUTHOR=$(jq -r '.pull_request.user.login' "$GITHUB_EVENT_PATH")
+          PR_NUMBER=$(jq -r '.pull_request.number' "$GITHUB_EVENT_PATH")
+          REPO_NAME=$(jq -r '.repository.full_name' "$GITHUB_EVENT_PATH")
+
+          if [ "$REVIEWERS_COUNT" -eq 0 ]; then
+            echo "No reviewers assigned. Converting PR to draft..."
+
+            # Attempt to convert PR to draft using the API
+            curl -X PATCH \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "Content-Type: application/json" \
+              -d '{"draft": true}' \
+              "https://api.github.com/repos/$REPO_NAME/pulls/$PR_NUMBER"
+
+            # Add a comment to the PR
+            gh pr comment "https://github.com/$REPO_NAME/pull/$PR_NUMBER" \
+              --body ":warning: @${AUTHOR} please assign at least one reviewer before marking this PR as ready for review."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
