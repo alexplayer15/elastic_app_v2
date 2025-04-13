@@ -9,7 +9,7 @@ on:
       - "refactor/*"
       - "main"
 env:
-  AWS_REGION: eu-west-1                   
+  AWS_REGION: eu-west-2                   
   ECR_REPOSITORY: elastic_app_v2           
 
 jobs:
@@ -39,6 +39,13 @@ jobs:
           file: ./Dockerfile
           target: component-tests 
           load: true
+
+      - name: Set up AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
