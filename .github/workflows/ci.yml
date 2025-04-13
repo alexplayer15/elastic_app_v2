@@ -10,7 +10,9 @@ on:
       - "main"
 env:
   AWS_REGION: eu-west-2                   
-  ECR_REPOSITORY: elastic_app_v2           
+  ECR_REPOSITORY: elastic_app_v2   
+  ECS_TASK_DEFINITION: task-definition.json
+  CONTAINER_NAME: elastic-app-v2
 
 jobs:
   Build:
