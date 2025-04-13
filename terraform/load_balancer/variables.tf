@@ -12,3 +12,8 @@ variable "alb_sg_id"{
     type = string 
     description = "ALB security group ID"
 }
+
+variable "main_vpc_id" {
+    type = string 
+    description = "main vpc id"
+}

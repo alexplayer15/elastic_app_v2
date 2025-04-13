@@ -17,4 +17,10 @@ module "load_balancer" {
   alb_pub_sub_one_id = module.network.alb_pub_sub_one_id
   alb_pub_sub_two_id = module.network.alb_pub_sub_two_id
   alb_sg_id = module.network.alb_sg_id
+  main_vpc_id = module.network.main_vpc_id
+}
+
+module "ecs" {
+  source "./ecs"
+  tg_arn = module.load_balancer.tg_arn
 }
