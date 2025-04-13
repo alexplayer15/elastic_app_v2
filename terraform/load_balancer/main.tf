@@ -46,25 +46,3 @@ resource "aws_lb_listener" "main_alb_http_listener" {
 #   }
 # }
 
-# resource "aws_lb_listener_rule" "static" {
-#   listener_arn = aws_lb_listener.main_alb_http_listener.arn
-#   priority     = 100
-
-#   action {
-#     type             = "forward"
-#     target_group_arn = aws_lb_target_group.elastic_app_v2_tg.arn
-#   }
-
-#   condition {
-#     path_pattern {
-#       values = ["/static/*"]
-#     }
-#   }
-
-#   condition {
-#     host_header {
-#       values = ["example.com"]
-#     }
-#   }
-# }
-
