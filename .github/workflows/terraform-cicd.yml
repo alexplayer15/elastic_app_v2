@@ -72,11 +72,6 @@ jobs:
       run: |
         terraform validate
 
-    - name: Terraform plan 
-      if: ${{ !inputs.destroy_all_resources }}
-      run: |
-        terraform plan -out=../terraform.plan
-
     # - name: Install Terratest Dependencies
     #   run: |
     #     go mod init github.com/${{ inputs.username }}/${{ inputs.directory }}
@@ -98,8 +93,14 @@ jobs:
         set -e
         IMAGE_TAG=$(cat image_tag.txt)
         echo "tag=$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+        
+    - name: Terraform plan 
+      if: ${{ !inputs.destroy_all_resources }}
+      run: |
+        terraform plan -var="image_tag=${{ steps.image.outputs.tag }}" -out=../terraform.plan
 
     - name: Terraform apply
+      if: ${{ !inputs.destroy_all_resources }}
       run: |
         terraform apply -var="image_tag=${{ steps.image.outputs.tag }}" --auto-approve
 

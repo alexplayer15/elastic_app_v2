@@ -23,4 +23,5 @@ module "load_balancer" {
 module "ecs" {
   source = "./ecs"
   tg_arn = module.load_balancer.tg_arn
+  image_tag = var.image_tag
 }

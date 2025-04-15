@@ -1,3 +1,7 @@
+locals {
+  _enforce_image_tag = var.image_tag != "PLACEHOLDER_VALIDATE_ONLY" ? true : error("image_tag must be set to a real value and not PLACEHOLDER_VALIDATE_ONLY")
+}
+
 resource "aws_ecs_service" "elastic_app_v2_service" {
   name            = "elastic-app-v2"
   cluster         = aws_ecs_cluster.elastic_app_v2_cluster.id

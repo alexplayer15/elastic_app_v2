@@ -6,4 +6,6 @@ variable "tg_arn" {
 variable "image_tag" {
   description = "The tag of the container image to deploy"
   type        = string
+  default     = "PLACEHOLDER_VALIDATE_ONLY"
 }
+
