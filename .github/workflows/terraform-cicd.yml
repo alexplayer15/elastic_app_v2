@@ -34,6 +34,7 @@ on:
         type: string 
         description: image tag to be deployed
   workflow_call:
+    inputs:  
       terraform_version: 
         required: false
         type: string
