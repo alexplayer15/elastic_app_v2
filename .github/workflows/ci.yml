@@ -76,7 +76,7 @@ jobs:
   Deploy:
     needs: [ TagAndPublishImage ]
     name: Deploy
-    uses: ${{ github.workspace }}/elastic_app_v2/.github/workflows/terraform-cicd.yml
+    uses: ${{ github.workspace }}/elastic_app_v2/.github/workflows/terraform-cicd.yml@feature/implement-ecs-service
     with:
         image_tag: ${{ github.sha }}
 
