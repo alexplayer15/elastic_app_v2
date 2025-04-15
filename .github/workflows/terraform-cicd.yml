@@ -29,7 +29,31 @@ on:
         type: boolean
         description: 'check this to destroy all existing resources'
         default: false
-
+      image_tag:
+        required: true
+        type: string 
+        description: image tag to be deployed
+  workflow_call:
+      terraform_version: 
+        required: false
+        type: string
+        description: 'terraform version to use'
+        default: '1.9.5'
+      terraform_directory:
+        required: false
+        type: string 
+        description: directory terraform main.tf file is located 
+        default: terraform
+      destroy_all_resources:
+        required: false
+        type: boolean
+        description: 'check this to destroy all existing resources'
+        default: false  
+      image_tag:
+        required: true
+        type: string 
+        description: image tag to be deployed
+          
 jobs:
   terraform-cicd:
     runs-on: ubuntu-latest
@@ -81,27 +105,15 @@ jobs:
     #   run: |
     #     cd test
     #     go test -v -timeout 30m ./...
-
-    - name: Download image tag artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: image-tag
-
-    - name: Read image tag
-      id: image
-      run: |
-        set -e
-        IMAGE_TAG=$(cat image_tag.txt)
-        echo "tag=$IMAGE_TAG" >> "$GITHUB_OUTPUT"
         
     - name: Terraform plan 
       if: ${{ !inputs.destroy_all_resources }}
       run: |
-        terraform plan -var="image_tag=${{ steps.image.outputs.tag }}" -out=../terraform.plan
+        terraform plan -var="image_tag=${{ inputs.image_tag }}" -out=../terraform.plan
 
     - name: Terraform apply
       if: ${{ !inputs.destroy_all_resources }}
       run: |
-        terraform apply -var="image_tag=${{ steps.image.outputs.tag }}" --auto-approve
+        terraform apply -var="image_tag=${{ inputs.image_tag }}" --auto-approve
 
         
