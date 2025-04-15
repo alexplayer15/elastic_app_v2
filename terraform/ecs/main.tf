@@ -37,7 +37,7 @@ resource "aws_ecs_task_definition" "elastic_app_v2_task_definition" {
   container_definitions = jsonencode([
     {
       name      = "elastic-app-v2"
-      image     = "174558992457.dkr.ecr.eu-west-2.amazonaws.com/elastic_app_v2:latest"
+      image     = "174558992457.dkr.ecr.eu-west-2.amazonaws.com/elastic_app_v2:${var.image_tag}"
       cpu       = 10
       memory    = 512
       essential = true
