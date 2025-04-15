@@ -7,7 +7,6 @@ resource "aws_ecs_service" "elastic_app_v2_service" {
   cluster         = aws_ecs_cluster.elastic_app_v2_cluster.id
   task_definition = aws_ecs_task_definition.elastic_app_v2_task_definition.arn
   desired_count   = 1
-  iam_role        = aws_iam_role.ecs_task_role.arn
   depends_on      = [aws_iam_policy.ecs_app_policy]
 
   ordered_placement_strategy {
@@ -38,6 +37,7 @@ resource "aws_ecs_cluster" "elastic_app_v2_cluster" {
 
 resource "aws_ecs_task_definition" "elastic_app_v2_task_definition" {
   family = "service"
+  task_role_arn = aws_iam_role.ecs_task_role.arn
   container_definitions = jsonencode([
     {
       name      = "elastic-app-v2"

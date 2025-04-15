@@ -79,6 +79,7 @@ jobs:
     uses: alexplayer15/elastic_app_v2/.github/workflows/terraform-cicd.yml@feature/implement-ecs-service
     with:
         image_tag: ${{ github.sha }}
+    secrets: inherit
 
         
         
