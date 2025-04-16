@@ -16,7 +16,7 @@ resource "aws_ecs_service" "elastic_app_v2_service" {
 
   load_balancer {
     target_group_arn = var.tg_arn
-    container_name   = "elastic_app_v2"
+    container_name   = "elastic-app-v2"
     container_port   = 8080
   }
 
@@ -53,11 +53,6 @@ resource "aws_ecs_task_definition" "elastic_app_v2_task_definition" {
       ]
     }
   ])
-
-  volume {
-    name      = "service-storage"
-    host_path = "/ecs/service-storage"
-  }
 
   placement_constraints {
     type       = "memberOf"
