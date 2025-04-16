@@ -17,7 +17,7 @@ resource "aws_ecs_service" "elastic_app_v2_service" {
   load_balancer {
     target_group_arn = var.tg_arn
     container_name   = "elastic-app-v2"
-    container_port   = 8080
+    container_port   = 80
   }
 
   placement_constraints {
