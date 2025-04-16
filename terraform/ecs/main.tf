@@ -39,6 +39,7 @@ resource "aws_ecs_cluster" "elastic_app_v2_cluster" {
 resource "aws_ecs_task_definition" "elastic_app_v2_task_definition" {
   family = "service"
   task_role_arn = aws_iam_role.ecs_task_role.arn
+  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 256
@@ -57,6 +58,11 @@ resource "aws_ecs_task_definition" "elastic_app_v2_task_definition" {
     operating_system_family = "LINUX"
     cpu_architecture        = "X86_64"
   }
+
+  depends_on = [
+    aws_iam_role.ecs_task_role,
+    aws_iam_role.ecs_task_execution_role
+  ]
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {
