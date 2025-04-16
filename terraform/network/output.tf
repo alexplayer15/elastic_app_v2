@@ -14,3 +14,15 @@ output "main_vpc_id" {
     value = aws_vpc.main_vpc.id
 }
 
+output "ecs_private_subnet_one_id" {
+    value = aws_subnet.ecs_private_subnet_one.id
+}
+
+output "ecs_private_subnet_two_id" {
+    value = aws_subnet.ecs_private_subnet_two.id
+}
+
+output "ecs_task_sg_id" {
+    value = aws_security_group.ecs_task_sg.id
+}
+

@@ -8,6 +8,12 @@ resource "aws_ecs_service" "elastic_app_v2_service" {
   task_definition = aws_ecs_task_definition.elastic_app_v2_task_definition.arn
   desired_count   = 1
   depends_on      = [aws_iam_policy.ecs_app_policy]
+  launch_type = "FARGATE"
+
+  network_configuration {
+    subnets         = [var.ecs_private_subnet_one, var.ecs_private_subnet_two]
+    security_groups = [var.ecs_task_sg]
+  }
 
   ordered_placement_strategy {
     type  = "binpack"
@@ -18,11 +24,6 @@ resource "aws_ecs_service" "elastic_app_v2_service" {
     target_group_arn = var.tg_arn
     container_name   = "elastic-app-v2"
     container_port   = 80
-  }
-
-  placement_constraints {
-    type       = "memberOf"
-    expression = "attribute:ecs.availability-zone in [eu-west-2a, eu-west-2b, eu-west-2c]"
   }
 }
 
@@ -38,25 +39,23 @@ resource "aws_ecs_cluster" "elastic_app_v2_cluster" {
 resource "aws_ecs_task_definition" "elastic_app_v2_task_definition" {
   family = "service"
   task_role_arn = aws_iam_role.ecs_task_role.arn
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = 256
+  memory                   = 512
   container_definitions = jsonencode([
     {
       name      = "elastic-app-v2"
       image     = "174558992457.dkr.ecr.eu-west-2.amazonaws.com/elastic_app_v2:${var.image_tag}"
-      cpu       = 10
+      cpu       = 256
       memory    = 512
       essential = true
-      portMappings = [
-        {
-          containerPort = 80
-          hostPort      = 80
-        }
-      ]
     }
   ])
 
-  placement_constraints {
-    type       = "memberOf"
-    expression = "attribute:ecs.availability-zone in [eu-west-2a, eu-west-2b]"
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
   }
 }
 

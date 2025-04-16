@@ -9,3 +9,17 @@ variable "image_tag" {
   default     = "PLACEHOLDER_VALIDATE_ONLY"
 }
 
+variable "ecs_private_subnet_one" {
+  description = "One of the private subnets the ECS Fargate tasks will be hosted in"
+  type        = string
+}
+
+variable "ecs_private_subnet_two" {
+  description = "One of the private subnets the ECS Fargate tasks will be hosted in"
+  type        = string
+}
+
+variable "ecs_task_sg" {
+    description = "Security group for ECS tasks"
+    type        = string 
+}
