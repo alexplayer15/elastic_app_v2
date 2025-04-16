@@ -15,7 +15,7 @@ resource "aws_lb" "main_alb" {
 
 resource "aws_lb_target_group" "elastic_app_v2_tg" {
   name        = "elastic-app-v2-tg"
-  target_type = "alb"
+  target_type = "ip"
   port        = 80
   protocol    = "HTTP"
   vpc_id      = var.main_vpc_id
