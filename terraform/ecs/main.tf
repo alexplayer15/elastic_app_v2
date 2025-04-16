@@ -51,6 +51,12 @@ resource "aws_ecs_task_definition" "elastic_app_v2_task_definition" {
       cpu       = 256
       memory    = 512
       essential = true
+      portMappings = [
+      {
+        containerPort = 80
+        hostPort      = 80
+        protocol      = "tcp"
+      }]
     }
   ])
 
