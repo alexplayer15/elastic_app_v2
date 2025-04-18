@@ -16,7 +16,7 @@ resource "aws_subnet" "alb_public_subnet_one" {
   availability_zone = "eu-west-2a"
 
   tags = {
-    Name = "ALB_pub_sub"
+    Name = "ALB_pub_sub_one"
   }
 }
 
@@ -26,7 +26,7 @@ resource "aws_subnet" "alb_public_subnet_two" {
   availability_zone = "eu-west-2b"
 
   tags = {
-    Name = "ALB_pub_sub"
+    Name = "ALB_pub_sub_two"
   }
 }
 
@@ -44,6 +44,16 @@ resource "aws_route_table" "main_pub_sub_route_table" {
   route {
     cidr_block = var.allow_all_CIDR
     gateway_id = aws_internet_gateway.main_vpc_igw.id
+  }
+
+  route {
+    destination_prefix_list_id = aws_vpc_endpoint.s3_endpoint.prefix_list_id
+    vpc_endpoint_id = aws_vpc_endpoint.s3_endpoint.id
+  }
+
+  route {
+    destination_prefix_list_id = aws_vpc_endpoint.dynamodb_vpc_endpoint.prefix_list_id
+    vpc_endpoint_id = aws_vpc_endpoint.dynamodb_vpc_endpoint.id
   }
 }
 
@@ -93,7 +103,7 @@ resource "aws_route_table_association" "ecs_priv_sub_two_association" {
   route_table_id = aws_route_table.main_priv_sub_route_table.id
 }
 
-resource "aws_vpc_endpoint" "dynamoDb_vpc_endpoint" {
+resource "aws_vpc_endpoint" "dynamodb_vpc_endpoint" {
   vpc_id       = aws_vpc.main_vpc.id
   service_name = "com.amazonaws.eu-west-2.dynamodb"
   vpc_endpoint_type = "Gateway"
@@ -104,7 +114,18 @@ resource "aws_vpc_endpoint" "dynamoDb_vpc_endpoint" {
   }
 }
 
-resource "aws_vpc_endpoint" "ecr_interface_vpc_endpoint" {
+resource "aws_vpc_endpoint" "s3_endpoint" {
+  vpc_id       = aws_vpc.main_vpc.id
+  service_name = "com.amazonaws.region.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids = [aws_route_table.main_priv_sub_route_table.id]
+
+  tags = {
+    Name = "DynamoDB VPC Endpoint"
+  }
+}
+
+resource "aws_vpc_endpoint" "ecr_dkr_interface_vpc_endpoint" {
   vpc_id            = aws_vpc.main_vpc.id
   service_name      = "com.amazonaws.eu-west-2.ecr.dkr"
   vpc_endpoint_type = "Interface"
@@ -120,6 +141,96 @@ resource "aws_vpc_endpoint" "ecr_interface_vpc_endpoint" {
   tags = {
     Name = "ECR VPC Endpoint"
   }
+}
+
+resource "aws_vpc_endpoint" "ecr_api_interface_vpc_endpoint" {
+  vpc_id            = aws_vpc.main_vpc.id
+  service_name      = "com.amazonaws.region.ecr.api"
+  vpc_endpoint_type = "Interface"
+
+  security_group_ids = [
+    aws_security_group.ecr_vpc_endpoint_sg.id
+  ]
+
+  subnet_ids = [aws_subnet.ecs_private_subnet_one.id, aws_subnet.ecs_private_subnet_two.id]
+
+  private_dns_enabled = true
+
+  tags = {
+    Name = "ECR API VPC Endpoint"
+  }
+}
+
+resource "aws_vpc_endpoint_policy" "ecr_dkr_api_endpoint_policy" {
+  vpc_endpoint_id = aws_vpc_endpoint.ecr_api_interface_vpc_endpoint.id
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement": [
+    {
+			"Sid": "AllowAll",
+			"Effect": "Allow",
+			"Principal": "*",
+			"Action": "*",
+			"Resource": "*"
+		},
+		{
+			"Sid": "PreventDelete",
+			"Effect": "Deny",
+			"Principal": "*",
+			"Action": "ecr:DeleteRepository",
+			"Resource": "arn:aws:ecr:region:1234567890:repository/repository_name"
+		},
+		{
+			"Sid": "AllowPull",
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": "arn:aws:iam::1234567890:role/role_name"
+			},
+			"Action": [
+				"ecr:BatchGetImage",
+				"ecr:GetDownloadUrlForLayer",
+                          "ecr:GetAuthorizationToken"
+			],
+			"Resource": "*"
+		}
+	]
+  })
+}
+
+resource "aws_vpc_endpoint_policy" "ecr_dkr_vpc_endpoint_policy" {
+  vpc_endpoint_id = aws_vpc_endpoint.ecr_dkr_interface_vpc_endpoint.id
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement": [
+    {
+			"Sid": "AllowAll",
+			"Effect": "Allow",
+			"Principal": "*",
+			"Action": "*",
+			"Resource": "*"
+		},
+		{
+			"Sid": "PreventDelete",
+			"Effect": "Deny",
+			"Principal": "*",
+			"Action": "ecr:DeleteRepository",
+			"Resource": "arn:aws:ecr:region:1234567890:repository/repository_name"
+		},
+		{
+			"Sid": "AllowPull",
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": "arn:aws:iam::1234567890:role/role_name"
+			},
+			"Action": [
+				"ecr:BatchGetImage",
+				"ecr:GetDownloadUrlForLayer",
+                          "ecr:GetAuthorizationToken"
+			],
+			"Resource": "*"
+		}
+	]
+  })
 }
 
 //Security groups

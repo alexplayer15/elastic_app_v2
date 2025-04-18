@@ -1,5 +1,6 @@
 locals {
   _enforce_image_tag = var.image_tag != "PLACEHOLDER_VALIDATE_ONLY" ? true : error("image_tag must be set to a real value and not PLACEHOLDER_VALIDATE_ONLY")
+  elastic_app_v2_ecr_repo_name = "elastic_app_v2"
 }
 
 resource "aws_ecs_service" "elastic_app_v2_service" {
@@ -13,11 +14,6 @@ resource "aws_ecs_service" "elastic_app_v2_service" {
   network_configuration {
     subnets         = [var.ecs_private_subnet_one, var.ecs_private_subnet_two]
     security_groups = [var.ecs_task_sg]
-  }
-
-  ordered_placement_strategy {
-    type  = "binpack"
-    field = "cpu"
   }
 
   load_balancer {
@@ -150,3 +146,41 @@ resource "aws_iam_role_policy_attachment" "ecs_app_policy_attach" {
   role       = aws_iam_role.ecs_task_role.name
   policy_arn = aws_iam_policy.ecs_app_policy.arn
 }
+
+data "aws_ecr_repository" "elastic_app_v2_ecr_repo" {
+    name = local.elastic_app_v2_ecr_repo_name
+}
+
+resource "aws_ecr_repository_policy" "elastic_app_v2_ecr_repo_policy" {
+  repository = data.aws_ecr_repository.elastic_app_v2_ecr_repo.name
+
+  policy = jsonencode({
+    Version = "2008-10-17",
+    Statement = [
+      {
+        Sid       = "AllowECSAccess",
+        Effect    = "Allow",
+        Principal = {
+          AWS = aws_iam_role.ecs_task_execution_role.arn
+        },
+        actions = [
+            "ecr:GetDownloadUrlForLayer",
+            "ecr:BatchGetImage",
+            "ecr:BatchCheckLayerAvailability",
+            "ecr:PutImage",
+            "ecr:InitiateLayerUpload",
+            "ecr:UploadLayerPart",
+            "ecr:CompleteLayerUpload",
+            "ecr:DescribeRepositories",
+            "ecr:GetRepositoryPolicy",
+            "ecr:ListImages"
+        ]
+      }
+    ]
+  })
+
+  depends_on = [
+    aws_iam_role.ecs_task_execution_role
+  ]
+}
+
