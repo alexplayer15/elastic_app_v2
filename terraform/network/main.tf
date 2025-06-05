@@ -82,16 +82,6 @@ resource "aws_subnet" "ecs_private_subnet_two" {
 
 resource "aws_route_table" "main_priv_sub_route_table" {
   vpc_id = aws_vpc.main_vpc.id
-
-  route {
-    destination_prefix_list_id = aws_vpc_endpoint.s3_endpoint.prefix_list_id
-    vpc_endpoint_id = aws_vpc_endpoint.s3_endpoint.id
-  }
-
-  route {
-    destination_prefix_list_id = aws_vpc_endpoint.dynamodb_vpc_endpoint.prefix_list_id
-    vpc_endpoint_id = aws_vpc_endpoint.dynamodb_vpc_endpoint.id
-  }
 }
 
 resource "aws_route_table_association" "ecs_priv_sub_one_association" {
@@ -108,7 +98,6 @@ resource "aws_vpc_endpoint" "dynamodb_vpc_endpoint" {
   vpc_id       = aws_vpc.main_vpc.id
   service_name = "com.amazonaws.eu-west-2.dynamodb"
   vpc_endpoint_type = "Gateway"
-  route_table_ids = [aws_route_table.main_priv_sub_route_table.id]
 
   tags = {
     Name = "DynamoDB VPC Endpoint"
@@ -119,12 +108,24 @@ resource "aws_vpc_endpoint" "s3_endpoint" {
   vpc_id       = aws_vpc.main_vpc.id
   service_name = "com.amazonaws.eu-west-2.s3"
   vpc_endpoint_type = "Gateway"
-  route_table_ids = [aws_route_table.main_priv_sub_route_table.id]
 
   tags = {
     Name = "DynamoDB VPC Endpoint"
   }
 }
+
+resource "aws_route" "s3_vpce_route" {
+  route_table_id         = aws_route_table.main_priv_sub_route_table.id
+  destination_prefix_list_id = aws_vpc_endpoint.s3_endpoint.prefix_list_id
+  vpc_endpoint_id        = aws_vpc_endpoint.s3_endpoint.id
+}
+
+resource "aws_route" "dynamodb_vpce_route" {
+  route_table_id         = aws_route_table.main_priv_sub_route_table.id
+  destination_prefix_list_id = aws_vpc_endpoint.dynamodb_vpc_endpoint.prefix_list_id
+  vpc_endpoint_id        = aws_vpc_endpoint.dynamodb_vpc_endpoint.id
+}
+
 
 resource "aws_vpc_endpoint" "ecr_dkr_interface_vpc_endpoint" {
   vpc_id            = aws_vpc.main_vpc.id
