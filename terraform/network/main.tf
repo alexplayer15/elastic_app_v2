@@ -46,15 +46,6 @@ resource "aws_route_table" "main_pub_sub_route_table" {
     gateway_id = aws_internet_gateway.main_vpc_igw.id
   }
 
-  route {
-    destination_prefix_list_id = aws_vpc_endpoint.s3_endpoint.prefix_list_id
-    vpc_endpoint_id = aws_vpc_endpoint.s3_endpoint.id
-  }
-
-  route {
-    destination_prefix_list_id = aws_vpc_endpoint.dynamodb_vpc_endpoint.prefix_list_id
-    vpc_endpoint_id = aws_vpc_endpoint.dynamodb_vpc_endpoint.id
-  }
 }
 
 resource "aws_route_table_association" "alb_pub_sub_one_assocation" {
@@ -91,6 +82,16 @@ resource "aws_subnet" "ecs_private_subnet_two" {
 
 resource "aws_route_table" "main_priv_sub_route_table" {
   vpc_id = aws_vpc.main_vpc.id
+
+  route {
+    destination_prefix_list_id = aws_vpc_endpoint.s3_endpoint.prefix_list_id
+    vpc_endpoint_id = aws_vpc_endpoint.s3_endpoint.id
+  }
+
+  route {
+    destination_prefix_list_id = aws_vpc_endpoint.dynamodb_vpc_endpoint.prefix_list_id
+    vpc_endpoint_id = aws_vpc_endpoint.dynamodb_vpc_endpoint.id
+  }
 }
 
 resource "aws_route_table_association" "ecs_priv_sub_one_association" {
@@ -187,23 +188,15 @@ resource "aws_vpc_endpoint_policy" "ecr_dkr_api_endpoint_policy" {
 resource "aws_vpc_endpoint_policy" "ecr_dkr_vpc_endpoint_policy" {
   vpc_endpoint_id = aws_vpc_endpoint.ecr_dkr_interface_vpc_endpoint.id
   policy = jsonencode({
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "AllowECSPullAccess",
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "arn:aws:iam::1234567890:role/role_name"
-      },
-      "Action": [
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchGetImage"
-      ],
-      "Resource": "*"
-    }
-  ]
-})
-
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": "*",
+        "Action": "*",
+        "Resource": "*"
+      }
+    ]
+  })
 }
 
 //Security groups
