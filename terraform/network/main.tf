@@ -46,6 +46,15 @@ resource "aws_route_table" "main_pub_sub_route_table" {
     gateway_id = aws_internet_gateway.main_vpc_igw.id
   }
 
+  route {
+    destination_prefix_list_id = aws_vpc_endpoint.s3_endpoint.prefix_list_id
+    vpc_endpoint_id = aws_vpc_endpoint.s3_endpoint.id
+  }
+
+  route {
+    destination_prefix_list_id = aws_vpc_endpoint.dynamodb_vpc_endpoint.prefix_list_id
+    vpc_endpoint_id = aws_vpc_endpoint.dynamodb_vpc_endpoint.id
+  }
 }
 
 resource "aws_route_table_association" "alb_pub_sub_one_assocation" {
@@ -98,6 +107,7 @@ resource "aws_vpc_endpoint" "dynamodb_vpc_endpoint" {
   vpc_id       = aws_vpc.main_vpc.id
   service_name = "com.amazonaws.eu-west-2.dynamodb"
   vpc_endpoint_type = "Gateway"
+  route_table_ids = [aws_route_table.main_priv_sub_route_table.id]
 
   tags = {
     Name = "DynamoDB VPC Endpoint"
@@ -108,22 +118,11 @@ resource "aws_vpc_endpoint" "s3_endpoint" {
   vpc_id       = aws_vpc.main_vpc.id
   service_name = "com.amazonaws.eu-west-2.s3"
   vpc_endpoint_type = "Gateway"
+  route_table_ids = [aws_route_table.main_priv_sub_route_table.id]
 
   tags = {
-    Name = "S3 Endpoint"
+    Name = "DynamoDB VPC Endpoint"
   }
-}
-
-# For S3
-resource "aws_route" "s3_vpce_route" {
-  route_table_id              = aws_route_table.main_priv_sub_route_table.id
-  destination_prefix_list_id  = aws_vpc_endpoint.s3_endpoint.prefix_list_id
-}
-
-# For DynamoDB
-resource "aws_route" "dynamodb_vpce_route" {
-  route_table_id              = aws_route_table.main_priv_sub_route_table.id
-  destination_prefix_list_id  = aws_vpc_endpoint.dynamodb_vpc_endpoint.prefix_list_id
 }
 
 resource "aws_vpc_endpoint" "ecr_dkr_interface_vpc_endpoint" {
@@ -162,7 +161,7 @@ resource "aws_vpc_endpoint" "ecr_api_interface_vpc_endpoint" {
   }
 }
 
-resource "aws_vpc_endpoint_policy" "ecr_api_endpoint_policy" {
+resource "aws_vpc_endpoint_policy" "ecr_dkr_api_endpoint_policy" {
   vpc_endpoint_id = aws_vpc_endpoint.ecr_api_interface_vpc_endpoint.id
   policy = jsonencode({
     "Version" : "2012-10-17",
@@ -187,21 +186,37 @@ resource "aws_vpc_endpoint_policy" "ecr_api_endpoint_policy" {
 
 resource "aws_vpc_endpoint_policy" "ecr_dkr_vpc_endpoint_policy" {
   vpc_endpoint_id = aws_vpc_endpoint.ecr_dkr_interface_vpc_endpoint.id
-
   policy = jsonencode({
     "Version" : "2012-10-17",
-    "Statement" : [
-      {
-        "Effect" : "Allow",
-        "Principal" : "*",
-        "Action" : [
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:BatchGetImage",
-          "ecr:BatchCheckLayerAvailability"
-        ],
-        "Resource" : "*"
-      }
-    ]
+    "Statement": [
+    {
+			"Sid": "AllowAll",
+			"Effect": "Allow",
+			"Principal": "*",
+			"Action": "*",
+			"Resource": "*"
+		},
+		{
+			"Sid": "PreventDelete",
+			"Effect": "Deny",
+			"Principal": "*",
+			"Action": "ecr:DeleteRepository",
+			"Resource": "arn:aws:ecr:region:1234567890:repository/repository_name"
+		},
+		{
+			"Sid": "AllowPull",
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": "arn:aws:iam::1234567890:role/role_name"
+			},
+			"Action": [
+				"ecr:BatchGetImage",
+				"ecr:GetDownloadUrlForLayer",
+                          "ecr:GetAuthorizationToken"
+			],
+			"Resource": "*"
+		}
+	]
   })
 }
 
