@@ -114,18 +114,17 @@ resource "aws_vpc_endpoint" "s3_endpoint" {
   }
 }
 
+# For S3
 resource "aws_route" "s3_vpce_route" {
-  route_table_id         = aws_route_table.main_priv_sub_route_table.id
-  destination_prefix_list_id = aws_vpc_endpoint.s3_endpoint.prefix_list_id
-  vpc_endpoint_id        = aws_vpc_endpoint.s3_endpoint.id
+  route_table_id              = aws_route_table.main_priv_sub_route_table.id
+  destination_prefix_list_id  = aws_vpc_endpoint.s3_endpoint.prefix_list_id
 }
 
+# For DynamoDB
 resource "aws_route" "dynamodb_vpce_route" {
-  route_table_id         = aws_route_table.main_priv_sub_route_table.id
-  destination_prefix_list_id = aws_vpc_endpoint.dynamodb_vpc_endpoint.prefix_list_id
-  vpc_endpoint_id        = aws_vpc_endpoint.dynamodb_vpc_endpoint.id
+  route_table_id              = aws_route_table.main_priv_sub_route_table.id
+  destination_prefix_list_id  = aws_vpc_endpoint.dynamodb_vpc_endpoint.prefix_list_id
 }
-
 
 resource "aws_vpc_endpoint" "ecr_dkr_interface_vpc_endpoint" {
   vpc_id            = aws_vpc.main_vpc.id
