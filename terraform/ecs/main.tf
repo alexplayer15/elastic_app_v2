@@ -8,7 +8,6 @@ resource "aws_ecs_service" "elastic_app_v2_service" {
   cluster         = aws_ecs_cluster.elastic_app_v2_cluster.id
   task_definition = aws_ecs_task_definition.elastic_app_v2_task_definition.arn
   desired_count   = 1
-  depends_on      = [aws_iam_policy.ecs_app_policy]
   launch_type = "FARGATE"
 
   network_configuration {
@@ -148,39 +147,26 @@ resource "aws_iam_role_policy_attachment" "ecs_app_policy_attach" {
 }
 
 data "aws_ecr_repository" "elastic_app_v2_ecr_repo" {
-    name = local.elastic_app_v2_ecr_repo_name
+  name = local.elastic_app_v2_ecr_repo_name
 }
 
-resource "aws_ecr_repository_policy" "elastic_app_v2_ecr_repo_policy" {
-  repository = data.aws_ecr_repository.elastic_app_v2_ecr_repo.name
+resource "aws_iam_role_policy" "ecs_execution_role_additional_ecr" {
+  name = "ECRExtraAccess"
+  role = aws_iam_role.ecs_task_execution_role.id
 
   policy = jsonencode({
-    Version = "2008-10-17",
+    Version = "2012-10-17",
     Statement = [
       {
-        Sid       = "AllowECSAccess",
-        Effect    = "Allow",
-        Principal = {
-          AWS = aws_iam_role.ecs_task_execution_role.arn
-        },
-        actions = [
-            "ecr:GetDownloadUrlForLayer",
-            "ecr:BatchGetImage",
-            "ecr:BatchCheckLayerAvailability",
-            "ecr:PutImage",
-            "ecr:InitiateLayerUpload",
-            "ecr:UploadLayerPart",
-            "ecr:CompleteLayerUpload",
-            "ecr:DescribeRepositories",
-            "ecr:GetRepositoryPolicy",
-            "ecr:ListImages"
-        ]
+        Effect = "Allow",
+        Action = [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchGetImage",
+          "ecr:GetDownloadUrlForLayer"
+        ],
+        Resource = "*"
       }
     ]
   })
-
-  depends_on = [
-    aws_iam_role.ecs_task_execution_role
-  ]
 }
 
