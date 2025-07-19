@@ -45,16 +45,6 @@ resource "aws_route_table" "main_pub_sub_route_table" {
     cidr_block = var.allow_all_CIDR
     gateway_id = aws_internet_gateway.main_vpc_igw.id
   }
-
-  route {
-    destination_prefix_list_id = aws_vpc_endpoint.s3_endpoint.prefix_list_id
-    vpc_endpoint_id = aws_vpc_endpoint.s3_endpoint.id
-  }
-
-  route {
-    destination_prefix_list_id = aws_vpc_endpoint.dynamodb_vpc_endpoint.prefix_list_id
-    vpc_endpoint_id = aws_vpc_endpoint.dynamodb_vpc_endpoint.id
-  }
 }
 
 resource "aws_route_table_association" "alb_pub_sub_one_assocation" {
