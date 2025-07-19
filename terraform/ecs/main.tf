@@ -1,24 +1,172 @@
-# resource "aws_ecs_service" "WebApp" {
-#   name            = "elastic_app"
-#   cluster         = aws_ecs_cluster.foo.id
-#   task_definition = aws_ecs_task_definition.mongo.arn
-#   desired_count   = 1
-#   iam_role        = aws_iam_role.foo.arn
-#   depends_on      = [aws_iam_role_policy.foo]
+locals {
+  _enforce_image_tag = var.image_tag != "PLACEHOLDER_VALIDATE_ONLY" ? true : error("image_tag must be set to a real value and not PLACEHOLDER_VALIDATE_ONLY")
+  elastic_app_v2_ecr_repo_name = "elastic_app_v2"
+}
 
-#   ordered_placement_strategy {
-#     type  = "binpack"
-#     field = "cpu"
-#   }
+resource "aws_ecs_service" "elastic_app_v2_service" {
+  name            = "elastic-app-v2"
+  cluster         = aws_ecs_cluster.elastic_app_v2_cluster.id
+  task_definition = aws_ecs_task_definition.elastic_app_v2_task_definition.arn
+  desired_count   = 1
+  launch_type = "FARGATE"
 
-#   load_balancer {
-#     target_group_arn = aws_lb_target_group.foo.arn
-#     container_name   = "elastic_app"
-#     container_port   = 8080
-#   }
+  network_configuration {
+    subnets         = [var.ecs_private_subnet_one, var.ecs_private_subnet_two]
+    security_groups = [var.ecs_task_sg]
+  }
 
-#   placement_constraints {
-#     type       = "memberOf"
-#     expression = "attribute:ecs.availability-zone in [eu-west-2a, eu-west-2b, eu-west-2c]"
-#   }
-# }
+  load_balancer {
+    target_group_arn = var.tg_arn
+    container_name   = "elastic-app-v2"
+    container_port   = 80
+  }
+}
+
+resource "aws_ecs_cluster" "elastic_app_v2_cluster" {
+  name = "elastic-app-v2-cluster"
+
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
+}
+
+resource "aws_ecs_task_definition" "elastic_app_v2_task_definition" {
+  family = "service"
+  task_role_arn = aws_iam_role.ecs_task_role.arn
+  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = 256
+  memory                   = 512
+  container_definitions = jsonencode([
+    {
+      name      = "elastic-app-v2"
+      image     = "174558992457.dkr.ecr.eu-west-2.amazonaws.com/elastic_app_v2:${var.image_tag}"
+      cpu       = 256
+      memory    = 512
+      essential = true
+      portMappings = [
+      {
+        containerPort = 80
+        hostPort      = 80
+        protocol      = "tcp"
+      }]
+    }
+  ])
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
+
+  depends_on = [
+    aws_iam_role.ecs_task_role,
+    aws_iam_role.ecs_task_execution_role
+  ]
+}
+
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "ecsTaskExecutionRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_execution_attach" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+resource "aws_iam_role" "ecs_task_role" {
+  name = "ecsAppTaskRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "ecs_app_policy" {
+  name = "ecsAppPolicy"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "ses:SendEmail",
+          "ses:SendRawEmail"
+        ],
+        Resource = "*"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ],
+        Resource = "*"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:Query",
+          "dynamodb:Scan"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_app_policy_attach" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = aws_iam_policy.ecs_app_policy.arn
+}
+
+data "aws_ecr_repository" "elastic_app_v2_ecr_repo" {
+  name = local.elastic_app_v2_ecr_repo_name
+}
+
+resource "aws_iam_role_policy" "ecs_execution_role_additional_ecr" {
+  name = "ECRExtraAccess"
+  role = aws_iam_role.ecs_task_execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchGetImage",
+          "ecr:GetDownloadUrlForLayer"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+

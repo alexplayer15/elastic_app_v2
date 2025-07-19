@@ -29,7 +29,32 @@ on:
         type: boolean
         description: 'check this to destroy all existing resources'
         default: false
-
+      image_tag:
+        required: true
+        type: string 
+        description: image tag to be deployed
+  workflow_call:
+    inputs:  
+      terraform_version: 
+        required: false
+        type: string
+        description: 'terraform version to use'
+        default: '1.9.5'
+      terraform_directory:
+        required: false
+        type: string 
+        description: directory terraform main.tf file is located 
+        default: terraform
+      destroy_all_resources:
+        required: false
+        type: boolean
+        description: 'check this to destroy all existing resources'
+        default: false  
+      image_tag:
+        required: true
+        type: string 
+        description: image tag to be deployed
+          
 jobs:
   terraform-cicd:
     runs-on: ubuntu-latest
@@ -72,11 +97,6 @@ jobs:
       run: |
         terraform validate
 
-    - name: Terraform plan 
-      if: ${{ !inputs.destroy_all_resources }}
-      run: |
-        terraform plan -out=../terraform.plan
-
     # - name: Install Terratest Dependencies
     #   run: |
     #     go mod init github.com/${{ inputs.username }}/${{ inputs.directory }}
@@ -86,10 +106,15 @@ jobs:
     #   run: |
     #     cd test
     #     go test -v -timeout 30m ./...
-
-    - name: Apply Terraform
+        
+    - name: Terraform plan 
       if: ${{ !inputs.destroy_all_resources }}
       run: |
-        terraform apply --auto-approve
+        terraform plan -var="image_tag=${{ inputs.image_tag }}" -out=../terraform.plan
+
+    - name: Terraform apply
+      if: ${{ !inputs.destroy_all_resources }}
+      run: |
+        terraform apply -var="image_tag=${{ inputs.image_tag }}" --auto-approve
 
         

@@ -13,18 +13,20 @@ resource "aws_vpc" "main_vpc" {
 resource "aws_subnet" "alb_public_subnet_one" {
   vpc_id     = aws_vpc.main_vpc.id
   cidr_block = "10.0.1.0/24"
+  availability_zone = "eu-west-2a"
 
   tags = {
-    Name = "ALB_pub_sub"
+    Name = "ALB_pub_sub_one"
   }
 }
 
 resource "aws_subnet" "alb_public_subnet_two" {
   vpc_id     = aws_vpc.main_vpc.id
   cidr_block = "10.0.2.0/24"
+  availability_zone = "eu-west-2b"
 
   tags = {
-    Name = "ALB_pub_sub"
+    Name = "ALB_pub_sub_two"
   }
 }
 
@@ -91,7 +93,7 @@ resource "aws_route_table_association" "ecs_priv_sub_two_association" {
   route_table_id = aws_route_table.main_priv_sub_route_table.id
 }
 
-resource "aws_vpc_endpoint" "dynamoDb_vpc_endpoint" {
+resource "aws_vpc_endpoint" "dynamodb_vpc_endpoint" {
   vpc_id       = aws_vpc.main_vpc.id
   service_name = "com.amazonaws.eu-west-2.dynamodb"
   vpc_endpoint_type = "Gateway"
@@ -102,7 +104,18 @@ resource "aws_vpc_endpoint" "dynamoDb_vpc_endpoint" {
   }
 }
 
-resource "aws_vpc_endpoint" "ecr_interface_vpc_endpoint" {
+resource "aws_vpc_endpoint" "s3_endpoint" {
+  vpc_id       = aws_vpc.main_vpc.id
+  service_name = "com.amazonaws.eu-west-2.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids = [aws_route_table.main_priv_sub_route_table.id]
+
+  tags = {
+    Name = "DynamoDB VPC Endpoint"
+  }
+}
+
+resource "aws_vpc_endpoint" "ecr_dkr_interface_vpc_endpoint" {
   vpc_id            = aws_vpc.main_vpc.id
   service_name      = "com.amazonaws.eu-west-2.ecr.dkr"
   vpc_endpoint_type = "Interface"
@@ -118,6 +131,83 @@ resource "aws_vpc_endpoint" "ecr_interface_vpc_endpoint" {
   tags = {
     Name = "ECR VPC Endpoint"
   }
+}
+
+resource "aws_vpc_endpoint" "ecr_api_interface_vpc_endpoint" {
+  vpc_id            = aws_vpc.main_vpc.id
+  service_name      = "com.amazonaws.eu-west-2.ecr.api"
+  vpc_endpoint_type = "Interface"
+
+  security_group_ids = [
+    aws_security_group.ecr_vpc_endpoint_sg.id
+  ]
+
+  subnet_ids = [aws_subnet.ecs_private_subnet_one.id, aws_subnet.ecs_private_subnet_two.id]
+
+  private_dns_enabled = true
+
+  tags = {
+    Name = "ECR API VPC Endpoint"
+  }
+}
+
+resource "aws_vpc_endpoint_policy" "ecr_dkr_api_endpoint_policy" {
+  vpc_endpoint_id = aws_vpc_endpoint.ecr_api_interface_vpc_endpoint.id
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement": [
+    {
+			"Sid": "AllowAll",
+			"Effect": "Allow",
+			"Principal": "*",
+			"Action": "*",
+			"Resource": "*"
+		},
+		{
+			"Sid": "PreventDelete",
+			"Effect": "Deny",
+			"Principal": "*",
+			"Action": "ecr:DeleteRepository",
+			"Resource": "arn:aws:ecr:eu-west-2:174558992457:repository/elastic_app_v2"
+		}
+	]
+  })
+}
+
+resource "aws_vpc_endpoint_policy" "ecr_dkr_vpc_endpoint_policy" {
+  vpc_endpoint_id = aws_vpc_endpoint.ecr_dkr_interface_vpc_endpoint.id
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement": [
+    {
+			"Sid": "AllowAll",
+			"Effect": "Allow",
+			"Principal": "*",
+			"Action": "*",
+			"Resource": "*"
+		},
+		{
+			"Sid": "PreventDelete",
+			"Effect": "Deny",
+			"Principal": "*",
+			"Action": "ecr:DeleteRepository",
+			"Resource": "arn:aws:ecr:region:1234567890:repository/repository_name"
+		},
+		{
+			"Sid": "AllowPull",
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": "arn:aws:iam::1234567890:role/role_name"
+			},
+			"Action": [
+				"ecr:BatchGetImage",
+				"ecr:GetDownloadUrlForLayer",
+                          "ecr:GetAuthorizationToken"
+			],
+			"Resource": "*"
+		}
+	]
+  })
 }
 
 //Security groups
