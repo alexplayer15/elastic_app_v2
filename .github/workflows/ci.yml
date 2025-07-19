@@ -73,13 +73,5 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-  Deploy:
-    needs: [ TagAndPublishImage ]
-    name: Deploy
-    uses: alexplayer15/elastic_app_v2/.github/workflows/terraform-cicd.yml@feature/implement-ecs-service
-    with:
-        image_tag: ${{ github.sha }}
-    secrets: inherit
-
         
         
