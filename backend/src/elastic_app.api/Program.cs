@@ -10,6 +10,8 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
     builder.Configure();
+    builder.Services.AddHealthChecks()
+    .AddCheck<SampleHealthCheck>("Sample");
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
@@ -19,6 +21,7 @@ try
     builder.Services.AddLogging();
 
     var app = builder.Build();
+    app.MapHealthChecks("/health");
     app.UseHttpsRedirection();
     app.UseAuthorization();
     app.MapControllers();
