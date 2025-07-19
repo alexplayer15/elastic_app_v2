@@ -1,6 +1,8 @@
 using elastic_app.api.ServiceConfigurations;
 using elastic_app.application.Handlers;
+using elastic_app.infrastructure.DynamoDB;
 using MediatR;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using NLog;
 
 var logger = LogManager.Setup().GetCurrentClassLogger();
@@ -11,7 +13,8 @@ try
     var builder = WebApplication.CreateBuilder(args);
     builder.Configure();
     builder.Services.AddHealthChecks()
-    .AddCheck<SampleHealthCheck>("Sample");
+    .AddCheck<ServiceHealthCheck>("service")
+    .AddCheck<DynamoDbHealthCheck>("dynamodb");
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
@@ -21,7 +24,15 @@ try
     builder.Services.AddLogging();
 
     var app = builder.Build();
-    app.MapHealthChecks("/health");
+    app.MapHealthChecks("/health", new HealthCheckOptions
+    {
+        Predicate = check => check.Name == "service"
+    });
+
+    app.MapHealthChecks("/health/table", new HealthCheckOptions
+    {
+        Predicate = check => check.Name == "dynamodb"
+    });
     app.UseHttpsRedirection();
     app.UseAuthorization();
     app.MapControllers();
