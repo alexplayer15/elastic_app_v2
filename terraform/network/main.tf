@@ -151,65 +151,6 @@ resource "aws_vpc_endpoint" "ecr_api_interface_vpc_endpoint" {
   }
 }
 
-resource "aws_vpc_endpoint_policy" "ecr_dkr_api_endpoint_policy" {
-  vpc_endpoint_id = aws_vpc_endpoint.ecr_api_interface_vpc_endpoint.id
-  policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement": [
-    {
-			"Sid": "AllowAll",
-			"Effect": "Allow",
-			"Principal": "*",
-			"Action": "*",
-			"Resource": "*"
-		},
-		{
-			"Sid": "PreventDelete",
-			"Effect": "Deny",
-			"Principal": "*",
-			"Action": "ecr:DeleteRepository",
-			"Resource": "arn:aws:ecr:eu-west-2:174558992457:repository/elastic_app_v2"
-		}
-	]
-  })
-}
-
-resource "aws_vpc_endpoint_policy" "ecr_dkr_vpc_endpoint_policy" {
-  vpc_endpoint_id = aws_vpc_endpoint.ecr_dkr_interface_vpc_endpoint.id
-  policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement": [
-    {
-			"Sid": "AllowAll",
-			"Effect": "Allow",
-			"Principal": "*",
-			"Action": "*",
-			"Resource": "*"
-		},
-		{
-			"Sid": "PreventDelete",
-			"Effect": "Deny",
-			"Principal": "*",
-			"Action": "ecr:DeleteRepository",
-			"Resource": "arn:aws:ecr:region:1234567890:repository/repository_name"
-		},
-		{
-			"Sid": "AllowPull",
-			"Effect": "Allow",
-			"Principal": {
-				"AWS": "arn:aws:iam::1234567890:role/role_name"
-			},
-			"Action": [
-				"ecr:BatchGetImage",
-				"ecr:GetDownloadUrlForLayer",
-                          "ecr:GetAuthorizationToken"
-			],
-			"Resource": "*"
-		}
-	]
-  })
-}
-
 //Security groups
 resource "aws_security_group" "alb_sg" {
   vpc_id = aws_vpc.main_vpc.id
